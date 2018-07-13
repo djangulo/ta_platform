@@ -8,14 +8,23 @@ from string import punctuation
 
 from accounts.models import NationalId, Person, User
 
-class Institution(models.Model):
+class SupportModel(models.Model):
+    display_in_form = models.BooleanField(default=False, blank=False)
+    name = models.CharField(max_length=50, blank=False)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        abstract = True
+
+
+class Institution(SupportModel):
     short_name = models.CharField(max_length=15, unique=True, blank=False)
-    long_name = models.CharField(max_length=150, unique=True, blank=False)
 
 
-class Career(models.Model):
+class Career(SupportModel):
     industry = models.CharField(max_length=50, unique=True)
-    trade_name = models.CharField(max_length=100, unique=True)
     institution = models.ForeignKey(
         'applications.Institution',
         null=True,
@@ -24,6 +33,32 @@ class Career(models.Model):
         on_delete=models.SET_NULL,
     )
 
+
+class Shift(SupportModel):
+    class Meta(SupportModel.Meta):
+        verbose_name = _('shift')
+        verbose_name_plural = _('shifts')
+
+
+class Language(SupportModel):
+    class Meta(SupportModel.Meta):
+        verbose_name = _('language')
+        verbose_name_plural = _('languages')
+
+class CityTown(SupportModel):
+    class Meta(SupportModel.Meta):
+        verbose_name = _('city or town')
+        ordering = ('name',)
+
+class CallCenter(SupportModel):
+    class Meta(SupportModel.Meta):
+        verbose_name = _('call center')
+        verbose_name_plural = _('call centers')
+
+class AreaOfExperience(SupportModel):
+    class Meta(SupportModel.Meta):
+        verbose_name = _('area of experience')
+        verbose_name_plural = _('areas of experience')
 
 class Application(models.Model):
     CEDULA = 0
@@ -59,6 +94,34 @@ class Application(models.Model):
     active_studies = models.BooleanField(default=False)
     career = models.CharField(max_length=50, blank=True)
     institution = models.CharField(max_length=150, blank=True)
+
+    currently_employed = models.BooleanField(default=False, blank=True)
+    current_employer = models.CharField(max_length=50, blank=True)
+
+    languages = models.ManyToManyField(
+        'applications.Language',
+        related_name='applicants',
+        blank=True,
+    )
+    previous_call_center_xp = models.BooleanField(default=False, blank=True)
+    previous_call_center = models.ManyToManyField(
+        'applications.CallCenter',
+        related_name='applications',
+        blank=True,
+    )
+    city_or_town = models.ForeignKey(
+        'applications.CityTown',
+        related_name='applications',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
+
+    areas_of_expertise = models.ManyToManyField(
+        'applications.AreaOfExperience',
+        related_name='applicants',
+        blank=True,
+    )
 
     pre_screen = models.BooleanField(default=False, blank=True)
     hire_iq = models.IntegerField(blank=True, null=True)

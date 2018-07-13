@@ -1,0 +1,261 @@
+<form class="container form-horizontal" action="" method="POST" novalidate="novalidate">
+    <div class="form-group has-error">
+        <span class="help-block">{{ form.non_field_errors }}</span>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <label class="h3">Personal information</label>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-4">
+                {% if form.national_id_type.errors %}
+                <div class="row">
+                    <div class="col-sm-offset-2">
+                        <div class="form-group has-error">
+                            <span class="help-block">{{ form.national_id_type.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <label class="control-label" for="{{ form.national_id_type.html_name }}">
+                    {{ form.national_id_type.label }}
+                </label>
+                <div>
+                    {{ form.national_id_type }}
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-8">
+                {% if form.national_id_number.errors %}
+                <div class="row">
+                    <div class="col-sm-offset-2">
+                        <div class="form-group has-error">
+                            <span class="help-block">{{ form.national_id_number.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <label class="control-label" for="{{ form.national_id_type.html_name }}">
+                    {{ form.national_id_number.label }}
+                </label>
+                <div>
+                    {{ form.national_id_number }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+                {% if form.first_names.errors %}
+                <div class="row">
+                    <div class="col-sm-offset-2">
+                        <div class="form-group has-error">
+                            <span class="help-block">{{ form.first_names.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <label class="control-label" for="{{ form.first_names.html_name }}">
+                    {{ form.first_names.label }}
+                </label>
+                <div>
+                    {{ form.first_names }}
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                {% if form.last_names.errors %}
+                <div class="row">
+                    <div class="col-sm-offset-2">
+                        <div class="form-group has-error">
+                            <span class="help-block">{{ form.last_names.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <label class="control-label" for="{{ form.last_names.html_name }}">
+                    {{ form.last_names.label }}
+                </label>
+                <div>
+                    {{ form.last_names }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <label class="h3">Contact information</label>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                {% if form.email.errors %}
+                <div class="row">
+                    <div class="col-sm-offset-2">
+                        <div class="form-group has-error">
+                            <span class="help-block">{{ form.email.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <label class="control-label" for="{{ form.email.html_name }}">
+                    {{ form.email.label }}
+                </label>
+                <div>
+                    {{ form.email }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+                {% if form.primary_phone.errors %}
+                <div class="row">
+                    <div class="col-sm-offset-2">
+                        <div class="form-group has-error">
+                            <span class="help-block">{{ form.primary_phone.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <label class="control-label" for="{{ form.primary_phone.html_name }}">
+                    {{ form.primary_phone.label }}
+                </label>
+                <div>
+                    {{ form.primary_phone }}
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                {% if form.secondary_phone.errors %}
+                <div class="row">
+                    <div class="col-sm-offset-2">
+                        <div class="form-group has-error">
+                            <span class="help-block">{{ form.secondary_phone.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <label class="control-label" for="{{ form.secondary_phone.html_name }}">
+                    {{ form.secondary_phone.label }}
+                </label>
+                <div>
+                    {{ form.secondary_phone }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-4">
+                {% if form.gender.errors %}
+                <div class="row">
+                    <div class="col-sm-offset-2">
+                        <div class="form-group has-error">
+                            <span class="help-block">{{ form.gender.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <label class="control-label" for="{{ form.gender.html_name }}">
+                    {{ form.gender.label }}
+                </label>
+                <div>
+                    {{ form.gender }}
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                {% if form.birth_date.errors %}
+                <div class="row">
+                    <div class="col-sm-offset-2">
+                        <div class="form-group has-error">
+                            <span class="help-block">{{ form.birth_date.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <label class="control-label" for="{{ form.birth_date.html_name }}">
+                    {{ form.birth_date.label }}
+                </label>
+                <div>
+                    {{ form.birth_date }}
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4">
+            <label class="control-label" for="{{ form.lived_in_usa.html_name }}">
+                </label>
+                <br>
+                <div class="pretty p-switch p-fill p-smooth">
+                    {{ form.lived_in_usa }}
+                    <div class="state p-primary">
+                        <label>{{ form.lived_in_usa.label }}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-4">
+                {% if form.city_or_town.errors %}
+                <div class="row">
+                    <div class="col-sm-offset-2">
+                        <div class="form-group has-error">
+                            <span class="help-block">{{ form.city_or_town.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <label class="control-label" for="{{ form.city_or_town.html_name }}">
+                    {{ form.city_or_town.label }}
+                </label>
+                <div>
+                    {{ form.city_or_town }}
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-8">
+                {% if form.address_line_one.errors %}
+                <div class="row">
+                    <div class="col-sm-offset-2">
+                        <div class="form-group has-error">
+                            <span class="help-block">{{ form.address_line_one.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <label class="control-label" for="{{ form.address_line_one.html_name }}">
+                    {{ form.address_line_one.label }}
+                </label>
+                <div>
+                    {{ form.address_line_one }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                {% if form.address_line_two.errors %}
+                <div class="row">
+                    <div class="col-sm-offset-2">
+                        <div class="form-group has-error">
+                            <span class="help-block">{{ form.address_line_two.errors }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <label class="control-label" for="{{ form.address_line_two.html_name }}">
+                    {{ form.address_line_two.label }}
+                </label>
+                <div>
+                    {{ form.address_line_two }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <label class="h3">Work experience</label>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-4">
+                <label class="control-label" for="{{ form.previous_call_center.html_name }}">
+                {{ form.previous_call_center.label }}
+                </label>
+
+                {% for cc in form.previous_call_center %}
+                    <div class="pretty p-switch p-fill p-smooth">
+                        <div class="state p-primary">
+                            <label>{{ cc }}</label>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</form>

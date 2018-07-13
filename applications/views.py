@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from django.views.generic import FormView
 
-# Create your views here.
+
+from applications.forms import ApplicationForm
+
+class ApplicationView(FormView):
+    form_class = ApplicationForm
+    template_name = 'applications/application_form.html'

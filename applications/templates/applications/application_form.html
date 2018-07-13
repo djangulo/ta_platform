@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block app_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+{% endblock %}
+
+{% block page_title %}R&amp;B Manager | 
+{% endblock %}
+
+{% block header_text %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a class="active">Apply</a></li>
+    </ol>
+{% endblock %}
+
+{% block nav-classes %}
+{% endblock %}
+
+{% block main_content %}
+    {% include 'applications/application_form_snippet.html'  %}
+{% endblock %}
+
+{% block app_js %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script>
+    $(document).ready(function() {
+
+        $('#id_application-birth_date').datepicker({
+            format: 'dd/mm/yyyy'
+        });
+    });
+</script>
+{% endblock %}

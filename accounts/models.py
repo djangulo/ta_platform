@@ -63,11 +63,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_staff(self):
-        return self.is_admin
+        return True
     
     @property
     def is_superuser(self):
-        return self.is_admin
+        return True
 
 
 class Address(models.Model):

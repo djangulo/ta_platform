@@ -50,7 +50,8 @@ class ApplicationModelTests(TestCase):
             address_line_one='ma-haus',
             email='otherwaldo@findme.com',
         )
-        self.assertEquals(Application.objects.first(), application)
+        self.assertEquals(Person.objects.first().first_names,
+                          application.first_names)
 
     def test_anon_db_lookup_by_natid(self):
         natid = NationalId.objects.create(id_type=1, id_number='SN-2432Sdn-1',
@@ -65,6 +66,34 @@ class ApplicationModelTests(TestCase):
             email='emaildoesnotmatch@findme.com',
         )
         self.assertEqual(application.national_id, natid)
+
+    def test_anon_db_lookup_by_phone(self):
+        natid = NationalId.objects.create(id_type=1, id_number='000-000000-0',
+                                    owner=self.person)
+        natid.save()
+        application = Application.objects.create(
+            first_names='Waldo',
+            last_names='The Unfindable',
+            primary_phone=self.person.primary_phone,
+            national_id_number='SN-2432Sdn-1',
+            address_line_one='ma-haus',
+            email='emaildoesnotmatch@findme.com',
+        )
+        self.assertEqual(application.national_id, self.person.national_id)
+
+    def test_anon_db_lookup_by_email(self):
+        natid = NationalId.objects.create(id_type=1, id_number='000-000000-0',
+                                    owner=self.person)
+        natid.save()
+        application = Application.objects.create(
+            first_names='Waldo',
+            last_names='The Unfindable',
+            primary_phone='222-222-22222',
+            national_id_number='SN-2432Sdn-1',
+            address_line_one='ma-haus',
+            email=self.person.user.email,
+        )
+        self.assertEqual(application.national_id, self.person.national_id)
 
 #     def test_can_create_customer_with_user(self):
 #         customer = Customer.objects.create(
