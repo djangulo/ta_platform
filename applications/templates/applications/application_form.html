@@ -4,9 +4,11 @@
 {% block app_css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/pretty-checkbox-overrides.css' %}" />
 {% endblock %}
 
-{% block page_title %}R&amp;B Manager | 
+{% block page_title %}
+    {{ COMPANY_NAME }} | Apply
 {% endblock %}
 
 {% block header_text %}
@@ -15,6 +17,7 @@
 {% block breadcrumbs %}
     <ol class="breadcrumb">
         <li><a href="{% url 'home' %}">Home</a></li>
+         &nbsp;>&nbsp;
         <li><a class="active">Apply</a></li>
     </ol>
 {% endblock %}
@@ -35,5 +38,25 @@
             format: 'dd/mm/yyyy'
         });
     });
+</script>
+<script>
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.getElementsByClassName('needs-validation');
+    // Loop over them and prevent submission
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated', 'alorica-validated');
+      }, false);
+    });
+  }, false);
+})();
 </script>
 {% endblock %}

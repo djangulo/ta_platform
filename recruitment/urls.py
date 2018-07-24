@@ -18,11 +18,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 
-from .views import HomePageView
+from .views import home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', HomePageView.as_view(), name='home'),
+    path('', home, name='home'),
     path('apply/', include('applications.urls', namespace='applications')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

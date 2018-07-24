@@ -94,6 +94,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'verbose_name': 'city or town',
+                'ordering': ('name',),
                 'abstract': False,
             },
         ),
@@ -143,7 +144,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='application',
             name='areas_of_expertise',
-            field=models.ManyToManyField(blank=True, related_name='applicants', to='applications.AreaOfExperience'),
+            field=models.ManyToManyField(blank=True, related_name='applicants', to='applications.AreaOfExpertise'),
         ),
         migrations.AddField(
             model_name='application',
@@ -157,17 +158,12 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='application',
-            name='national_id',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='applications', to='accounts.NationalId'),
-        ),
-        migrations.AddField(
-            model_name='application',
             name='person',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='applications', to='accounts.Person'),
         ),
         migrations.AddField(
             model_name='application',
             name='previous_call_center',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='applications', to='applications.CallCenter'),
+            field=models.ManyToManyField(blank=True, related_name='applications', to='applications.CallCenter'),
         ),
     ]

@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import sys
 
+from branding.vars import BRAND_DICT
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -132,7 +135,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, 'assets'),
-# )
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'branding'),
+)
 INTERNAL_IPS = ['127.0.0.1']
+
+APP_SETTINGS = {
+    'applications': {
+        'MIN_DAYS_ALLOWED': 30,
+    }
+}

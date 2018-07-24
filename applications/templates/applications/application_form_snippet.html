@@ -1,261 +1,179 @@
-<form class="container form-horizontal" action="" method="POST" novalidate="novalidate">
+<form id="application-form" class="needs-validation" action="" method="POST" novalidate="novalidate">
+    {% csrf_token %}
     <div class="form-group has-error">
         <span class="help-block">{{ form.non_field_errors }}</span>
     </div>
-    <div class="form-group">
-        <div class="row">
-            <label class="h3">Personal information</label>
+    <!-- Personal Information -->
+    <div class="form-row">
+        <label class="h3">Personal information</label>
+    </div>
+    <div class="form-row">
+        <div class="col-sm-12 col-md-4 mb-3">
+            <label class="control-label" for="{{ form.national_id_type.html_name }}">
+                {{ form.national_id_type.label }}
+            </label>
+            {{ form.national_id_type }}
         </div>
-        <div class="row">
-            <div class="col-sm-12 col-md-4">
-                {% if form.national_id_type.errors %}
-                <div class="row">
-                    <div class="col-sm-offset-2">
-                        <div class="form-group has-error">
-                            <span class="help-block">{{ form.national_id_type.errors }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                <label class="control-label" for="{{ form.national_id_type.html_name }}">
-                    {{ form.national_id_type.label }}
-                </label>
-                <div>
-                    {{ form.national_id_type }}
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-8">
-                {% if form.national_id_number.errors %}
-                <div class="row">
-                    <div class="col-sm-offset-2">
-                        <div class="form-group has-error">
-                            <span class="help-block">{{ form.national_id_number.errors }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                <label class="control-label" for="{{ form.national_id_type.html_name }}">
-                    {{ form.national_id_number.label }}
-                </label>
-                <div>
-                    {{ form.national_id_number }}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12 col-md-6">
-                {% if form.first_names.errors %}
-                <div class="row">
-                    <div class="col-sm-offset-2">
-                        <div class="form-group has-error">
-                            <span class="help-block">{{ form.first_names.errors }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                <label class="control-label" for="{{ form.first_names.html_name }}">
-                    {{ form.first_names.label }}
-                </label>
-                <div>
-                    {{ form.first_names }}
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-6">
-                {% if form.last_names.errors %}
-                <div class="row">
-                    <div class="col-sm-offset-2">
-                        <div class="form-group has-error">
-                            <span class="help-block">{{ form.last_names.errors }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                <label class="control-label" for="{{ form.last_names.html_name }}">
-                    {{ form.last_names.label }}
-                </label>
-                <div>
-                    {{ form.last_names }}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <label class="h3">Contact information</label>
-        </div>
-        <div class="row">
-            <div class="col-sm-12 col-md-12">
-                {% if form.email.errors %}
-                <div class="row">
-                    <div class="col-sm-offset-2">
-                        <div class="form-group has-error">
-                            <span class="help-block">{{ form.email.errors }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                <label class="control-label" for="{{ form.email.html_name }}">
-                    {{ form.email.label }}
-                </label>
-                <div>
-                    {{ form.email }}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12 col-md-6">
-                {% if form.primary_phone.errors %}
-                <div class="row">
-                    <div class="col-sm-offset-2">
-                        <div class="form-group has-error">
-                            <span class="help-block">{{ form.primary_phone.errors }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                <label class="control-label" for="{{ form.primary_phone.html_name }}">
-                    {{ form.primary_phone.label }}
-                </label>
-                <div>
-                    {{ form.primary_phone }}
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-6">
-                {% if form.secondary_phone.errors %}
-                <div class="row">
-                    <div class="col-sm-offset-2">
-                        <div class="form-group has-error">
-                            <span class="help-block">{{ form.secondary_phone.errors }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                <label class="control-label" for="{{ form.secondary_phone.html_name }}">
-                    {{ form.secondary_phone.label }}
-                </label>
-                <div>
-                    {{ form.secondary_phone }}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12 col-md-4">
-                {% if form.gender.errors %}
-                <div class="row">
-                    <div class="col-sm-offset-2">
-                        <div class="form-group has-error">
-                            <span class="help-block">{{ form.gender.errors }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                <label class="control-label" for="{{ form.gender.html_name }}">
-                    {{ form.gender.label }}
-                </label>
-                <div>
-                    {{ form.gender }}
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-4">
-                {% if form.birth_date.errors %}
-                <div class="row">
-                    <div class="col-sm-offset-2">
-                        <div class="form-group has-error">
-                            <span class="help-block">{{ form.birth_date.errors }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                <label class="control-label" for="{{ form.birth_date.html_name }}">
-                    {{ form.birth_date.label }}
-                </label>
-                <div>
-                    {{ form.birth_date }}
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-4">
-            <label class="control-label" for="{{ form.lived_in_usa.html_name }}">
-                </label>
-                <br>
-                <div class="pretty p-switch p-fill p-smooth">
-                    {{ form.lived_in_usa }}
-                    <div class="state p-primary">
-                        <label>{{ form.lived_in_usa.label }}</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12 col-md-4">
-                {% if form.city_or_town.errors %}
-                <div class="row">
-                    <div class="col-sm-offset-2">
-                        <div class="form-group has-error">
-                            <span class="help-block">{{ form.city_or_town.errors }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                <label class="control-label" for="{{ form.city_or_town.html_name }}">
-                    {{ form.city_or_town.label }}
-                </label>
-                <div>
-                    {{ form.city_or_town }}
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-8">
-                {% if form.address_line_one.errors %}
-                <div class="row">
-                    <div class="col-sm-offset-2">
-                        <div class="form-group has-error">
-                            <span class="help-block">{{ form.address_line_one.errors }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                <label class="control-label" for="{{ form.address_line_one.html_name }}">
-                    {{ form.address_line_one.label }}
-                </label>
-                <div>
-                    {{ form.address_line_one }}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12 col-md-12">
-                {% if form.address_line_two.errors %}
-                <div class="row">
-                    <div class="col-sm-offset-2">
-                        <div class="form-group has-error">
-                            <span class="help-block">{{ form.address_line_two.errors }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                <label class="control-label" for="{{ form.address_line_two.html_name }}">
-                    {{ form.address_line_two.label }}
-                </label>
-                <div>
-                    {{ form.address_line_two }}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <label class="h3">Work experience</label>
-        </div>
-        <div class="row">
-            <div class="col-sm-12 col-md-4">
-                <label class="control-label" for="{{ form.previous_call_center.html_name }}">
-                {{ form.previous_call_center.label }}
-                </label>
-
-                {% for cc in form.previous_call_center %}
-                    <div class="pretty p-switch p-fill p-smooth">
-                        <div class="state p-primary">
-                            <label>{{ cc }}</label>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-
+        <div class="col-sm-12 col-md-8 mb-3">
+            <label class="control-label" for="{{ form.national_id_type.html_name }}">
+                {{ form.national_id_number.label }}
+            </label>
+            {{ form.national_id_number }}
+            <div class="invalid-feedback">This field is required.</div>
+            <div class="invalid-feedback">{{ form.national_id_number.errors }}</div>
         </div>
     </div>
+    <div class="form-row">
+        <div class="col-sm-12 col-md-6 mb-3">
+            <label class="control-label" for="{{ form.first_names.html_name }}">
+                {{ form.first_names.label }}
+            </label>
+            {{ form.first_names }}
+            <div class="invalid-feedback">This field is required.</div>
+            <div class="invalid-feedback">{{ form.first_names.errors }}</div>
+        </div>
+        <div class="col-sm-12 col-md-6 mb-3">
+            <label class="control-label" for="{{ form.last_names.html_name }}">
+                {{ form.last_names.label }}
+            </label>
+            {{ form.last_names }}
+            <div class="invalid-feedback">This field is required.</div>
+            <div class="invalid-feedback">{{ form.last_names.errors }}</div>
+        </div>
+    </div>
+    <!-- Contact information -->
+    <div class="form-row">
+        <label class="h3">Contact information</label>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-md-12 mb-3">
+            <label class="control-label" for="{{ form.email.html_name }}">
+                {{ form.email.label }}
+            </label>
+            {{ form.email }}
+            <div class="invalid-feedback">This field is required.</div>
+            <div class="invalid-feedback">{{ form.email.errors }}</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-md-6 mb-3">
+            <label class="control-label" for="{{ form.primary_phone.html_name }}">
+                {{ form.primary_phone.label }}
+            </label>
+            {{ form.primary_phone }}
+            <div class="invalid-feedback">This field is required.</div>
+            <div class="invalid-feedback">{{ form.primary_phone.errors }}</div>
+        </div>
+        <div class="col-sm-12 col-md-6 mb-3">
+            <label class="control-label" for="{{ form.secondary_phone.html_name }}">
+                {{ form.secondary_phone.label }}
+            </label>
+            {{ form.secondary_phone }}
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-sm-12 col-md-4 mb-3">
+            <label class="control-label" for="{{ form.gender.html_name }}">
+                {{ form.gender.label }}
+            </label>
+            {{ form.gender }}
+        </div>
+        <div class="col-sm-12 col-md-4 mb-3">
+            <label class="control-label" for="{{ form.birth_date.html_name }}">
+                {{ form.birth_date.label }}
+            </label>
+            {{ form.birth_date }}
+            <div class="invalid-feedback">This field is required.</div>
+            <div class="invalid-feedback">{{ form.birth_date.errors }}</div>
+        </div>
+        <div class="col-sm-12 col-md-4 mb-3">
+        <label class="control-label" for="{{ form.lived_in_usa.html_name }}">
+            </label>
+            <br>
+            <div class="pretty p-switch p-fill p-smooth">
+                {{ form.lived_in_usa }}
+                <div class="state p-primary">
+                    <label>{{ form.lived_in_usa.label }}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-sm-12 col-md-4 mb-3">
+            <label class="control-label" for="{{ form.city_or_town.html_name }}">
+                {{ form.city_or_town.label }}
+            </label>
+            {{ form.city_or_town }}
+            <div class="invalid-feedback">This field is required.</div>
+            <div class="invalid-feedback">{{ form.city_or_town.errors }}</div>
+        </div>
+        <div class="col-sm-12 col-md-8 mb-3">
+            <label class="control-label" for="{{ form.address_line_one.html_name }}">
+                {{ form.address_line_one.label }}
+            </label>
+            {{ form.address_line_one }}
+            <div class="invalid-feedback">This field is required.</div>
+            <div class="invalid-feedback">{{ form.address_line_one.errors }}</div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-sm-12 col-md-12 mb-3">
+            <label class="control-label" for="{{ form.address_line_two.html_name }}">
+                {{ form.address_line_two.label }}
+            </label>
+            {{ form.address_line_two }}
+        </div>
+    </div>
+    <!-- Work experience & skills -->
+    <div class="form-row">
+        <label class="h3">Work experience &amp; skills</label>
+    </div>
+    <div class="form-row">
+        <div class="col-sm-12 col-md-4 mb-3">
+            <label class="mb-4" for="{{ form.previous_call_center.html_name }}">Previous call center experience</label>
+            <ul name="{{ form.previous_call_center.html_name }}">
+            {% for val,call_center in form.fields.previous_call_center.choices %}
+                <li style="list-style: none;">
+                    <div class="pretty p-switch p-fill">
+                        <input type="checkbox" value="{{ val }}"/>
+                        <div class="state p-primary">
+                            <label>{{ call_center }}</label>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="col-sm-12 col-md-4 mb-3">
+            <label class="mb-4" for="{{ form.areas_of_expertise.html_name }}">Areas of experience? (select all that apply)</label>
+            <ul name="{{ form.areas_of_expertise.html_name }}">
+                {% for val,x in form.fields.areas_of_expertise.choices %}
+                <li style="list-style: none;">
+                    <div class="pretty p-switch p-fill">
+                        <input type="checkbox" value="{{ val }}"/>
+                        <div class="state p-primary">
+                            <label>{{ x }}</label>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-sm-12 col-md-4 mb-3">
+            <label class="mb-4" for="{{ form.languages.html_name }}">Which languages do you speak?</label>
+            <ul name="{{ form.languages.html_name }}">
+                {% for val,x in form.fields.languages.choices %}
+                <li style="list-style: none;">
+                    <div class="pretty p-switch p-fill">
+                        <input type="checkbox" value="{{ val }}"/>
+                        <div class="state p-primary">
+                            <label>{{ x }}</label>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <input class="btn btn-primary" type="submit">
 </form>

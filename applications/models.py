@@ -1,12 +1,13 @@
 import re
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_save
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from string import punctuation
 
-from accounts.models import NationalId, Person, User
+from accounts.models import Person, User
 
 class SupportModel(models.Model):
     display_in_form = models.BooleanField(default=False, blank=False)
@@ -55,7 +56,7 @@ class CallCenter(SupportModel):
         verbose_name = _('call center')
         verbose_name_plural = _('call centers')
 
-class AreaOfExperience(SupportModel):
+class AreaOfExpertise(SupportModel):
     class Meta(SupportModel.Meta):
         verbose_name = _('area of experience')
         verbose_name_plural = _('areas of experience')
@@ -118,7 +119,7 @@ class Application(models.Model):
     )
 
     areas_of_expertise = models.ManyToManyField(
-        'applications.AreaOfExperience',
+        'applications.AreaOfExpertise',
         related_name='applicants',
         blank=True,
     )
@@ -135,13 +136,6 @@ class Application(models.Model):
         blank=True,
         null=True,
     )
-    national_id = models.ForeignKey(
-        'accounts.NationalId',
-        related_name='applications',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
 
     class Meta:
         verbose_name = _('application')
@@ -150,6 +144,12 @@ class Application(models.Model):
             ('change_status', _('can change status')),
             ('view_status', _('can view status')),
         )
+        get_latest_by = 'applied_at'
+
+    def __str__(self):
+        return '%s %s (%s: %s)' % (self.first_names, self.last_names,
+                                self.person.get_natid_type_display(),
+                                self.person.natid)
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -163,24 +163,21 @@ class Application(models.Model):
         return value.strip(punctuation)
 
     def create_person_if_none(self):
-        by_natid = NationalId.objects.filter(
-            id_number=self.clean_stringf(self.national_id_number)).first()
-        by_phone = Person.objects.filter(
-            primary_phone=self.clean_stringf(self.primary_phone)).first()
-        by_email = User.objects.filter(
-            email=self.email).first()
-        # import pdb; pdb.set_trace()
-        if by_natid is not None:
-            self.person = by_natid.owner
-            self.national_id = by_natid
-        elif by_phone is not None:
-            self.person = by_phone
-            self.national_id = self.person.national_id
-        elif by_email is not None:
-            self.person = by_email.person
-            self.national_id = self.person.national_id
-        # else:
-        #     User.objects.create_user(email=self.email, )
-
-
-
+        try:
+            person = Person.objects.create(first_names=self.first_names,
+                                         last_names=self.last_names,
+                                         primary_phone=self.primary_phone,
+                                         secondary_phone=self.secondary_phone,
+                                         birth_date=self.birth_date,
+                                         natid_type=self.national_id_type,
+                                         natid=self.national_id_number,
+                                         email=self.email)
+        except ValidationError:
+            person = Person.objects.get(natid=self.national_id_number)
+            allowed_days = timezone.now() - timezone.timedelta(
+                days=settings.APP_SETTINGS['applications']['MIN_DAYS_ALLOWED'])
+            if person.applications.latest().applied_at < allowed_days:
+                return ValidationError('The minimum days allowed between'\
+                                        'subsequent applications is {} days'\
+                                        'please try again later.')
+        self.person = person
