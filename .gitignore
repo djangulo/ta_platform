@@ -103,3 +103,10 @@ venv.bak/
 # mypy
 .mypy_cache/
 geckodriver.log
+
+
+# brand specific stuff
+branding
+
+# don't clutter the repo
+static
