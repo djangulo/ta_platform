@@ -10,6 +10,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from string import punctuation
 
@@ -18,20 +19,17 @@ def person_directory_path(instance, filename):
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, username, password, **extra_fields):
+    def create_user(self, email, password, **extra_fields):
         if not email:
             raise ValueError('Users must have a valid email address')
-        if not username:
-            username = self.models.normalize_username(re.findall('r([.\-_\w\d]+)@[.\-_\w\d]+', email)[0])
         email = self.normalize_email(email)
-        username = self.model.normalize_username(username)
-        user = self.model(email=email, username=username, **extra_fields)
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, username, password, **extra_fields):
-        user = self.create_user(email=email, username=username, password=password)
+    def create_superuser(self, email, password, **extra_fields):
+        user = self.create_user(email=email, password=password)
         user.is_admin = True
         user.save(using=self._db)
         return user
@@ -44,7 +42,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = []
 
     def get_full_name(self):
         return self.username
@@ -105,53 +103,69 @@ class Address(models.Model):
     def __str__(self):
         return f'{self.owner.display_name}: address_{self.id}'
 
+# Retiring this (for now)
+# class NationalId(models.Model):
+#     CEDULA = 0
+#     PASSPORT = 1
+#     SSN = 2
+#     ID_TYPE_CHOICES = (
+#         (CEDULA, _('Cedula')),
+#         (PASSPORT, _('Passport')),
+#         (SSN, _('Social Security Number'))
+#     )
+#     id_type = models.IntegerField(
+#         choices=ID_TYPE_CHOICES,
+#         default=CEDULA,
+#         help_text='ID Type: Cedula, SSN, Passport'
+#     )
+#     id_number = models.CharField(max_length=15, blank=False)
+#     owner = models.OneToOneField(
+#         'accounts.Person',
+#         related_name='national_id',
+#         on_delete=models.CASCADE,
+#     )
 
-class NationalId(models.Model):
+#     def save(self, *args, **kwargs):
+#         self.full_clean()
+#         super(NationalId, self).save(*args, **kwargs)
+
+#     def clean(self, *args, **kwargs):
+#         self.id_number = self.id_number.strip(punctuation)
+#         super(NationalId, self).clean(*args, **kwargs)
+
+#     def __str__(self):
+#         if self.id_type == 0:
+#             return f'{self.id_number[:3]}-{self.id_number[3:10]}-{self.id_number[-1:]}'
+#         elif self.id_type == 1:
+#             return f'{self.id_number}'
+#         elif self.id_type == 2:
+#             return f'{self.id_number[:3]}-{self.id_number[3:5]}-{self.id_number[-4:]}'
+
+
+class Person(models.Model):
     CEDULA = 0
     PASSPORT = 1
     SSN = 2
     ID_TYPE_CHOICES = (
-        (CEDULA, 'Cedula'),
-        (PASSPORT, 'Passport'),
-        (SSN, 'Social Security Number')
+        (CEDULA, _('Cedula')),
+        (PASSPORT, _('Passport')),
+        (SSN, _('Social Security Number'))
     )
-    id_type = models.IntegerField(
-        choices=ID_TYPE_CHOICES,
-        default=CEDULA,
-        help_text='ID Type: Cedula, SSN, Passport'
-    )
-    id_number = models.CharField(max_length=15, blank=False)
-    owner = models.OneToOneField(
-        'accounts.Person',
-        related_name='national_id',
-        on_delete=models.CASCADE,
-    )
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super(NationalId, self).save(*args, **kwargs)
-
-    def clean(self, *args, **kwargs):
-        self.id_number = self.id_number.strip(punctuation)
-        super(NationalId, self).clean(*args, **kwargs)
-
-    def __str__(self):
-        if self.id_type == 0:
-            return f'{self.id_number[:3]}-{self.id_number[3:10]}-{self.id_number[-1:]}'
-        elif self.id_type == 1:
-            return f'{self.id_number}'
-        elif self.id_type == 2:
-            return f'{self.id_number[:3]}-{self.id_number[3:5]}-{self.id_number[-4:]}'
-
-class Person(models.Model):
     first_names = models.CharField(max_length=100, blank=False)
     last_names = models.CharField(max_length=100, blank=False)
+    email = models.EmailField(blank=False)
     display_name = models.CharField(max_length=125, blank=True, null=True)
-    primary_phone = models.CharField(max_length=15, blank=False, unique=True)
+    primary_phone = models.CharField(max_length=15, blank=False)
     secondary_phone = models.CharField(max_length=15, blank=True, null=True)
     registered_at = models.DateTimeField(auto_now_add=True)
     birth_date = models.DateField(blank=True, null=True)
     bio = models.TextField(default='', blank=True)
+    natid_type = models.IntegerField(
+        choices=ID_TYPE_CHOICES,
+        default=CEDULA,
+        help_text='ID Type: Cedula, SSN, Passport'
+    )
+    natid = models.CharField(max_length=15, blank=False, unique=True)
     picture = models.ImageField(
         upload_to=person_directory_path,
         blank=True,
@@ -168,6 +182,10 @@ class Person(models.Model):
     class Meta:
         verbose_name = 'person'
         verbose_name_plural = 'persons'
+        indexes = [
+            models.Index(fields=['natid']),
+            models.Index(fields=['primary_phone']),
+        ]
 
 
     def save(self, *args, **kwargs):
@@ -187,5 +205,7 @@ class Person(models.Model):
         super(Person, self).delete(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.first_names} {self.last_names}: {self.display_name}'
+        return '%s %s (%s: %s)' % (self.first_names, self.last_names,
+                                self.get_natid_type_display(),
+                                self.natid)
 
