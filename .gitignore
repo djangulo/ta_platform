@@ -110,3 +110,6 @@ branding
 
 # don't clutter the repo
 static
+
+# temporarily ignore migrations until deployement
+migrations
