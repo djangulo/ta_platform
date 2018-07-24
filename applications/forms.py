@@ -1,11 +1,12 @@
 from django import forms
+from django.core import validators
 from django.utils import timezone
 from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.forms import widgets, formset_factory, inlineformset_factory
 
 from django.utils.translation import gettext_lazy as _
 
-from applications.models import Application
+from applications.models import Application, CallCenter, CityTown, Language, AreaOfExpertise
 
 REQUIRED_ERROR = 'This field cannot be blank.'
 EIGHTEEN_YEARS_AGO = (timezone.now() - timezone.timedelta(days=((365*18)+5))
@@ -13,6 +14,20 @@ EIGHTEEN_YEARS_AGO = (timezone.now() - timezone.timedelta(days=((365*18)+5))
 
 class ApplicationForm(forms.ModelForm):
     prefix = 'application'
+    email = forms.EmailField(validators=[validators.validate_email],
+                widget=forms.EmailInput(attrs={
+                    'placeholder': 'john.doe@company.com',
+                    'class': 'form-control',
+                },))
+    def __init__(self, *args, **kwargs):
+        super(ApplicationForm, self).__init__(*args, **kwargs)
+        self.fields['previous_call_center'].queryset = CallCenter.objects.all().filter(display_in_form=True)
+        self.fields['city_or_town'].queryset = CityTown.objects.all().filter(display_in_form=True)
+        self.fields['languages'].queryset = Language.objects.all().filter(display_in_form=True)
+        self.fields['areas_of_expertise'].queryset = AreaOfExpertise.objects.all().filter(display_in_form=True)
+
+    # def clean(self):
+
     class Meta:
         model = Application
         fields = (
@@ -30,6 +45,10 @@ class ApplicationForm(forms.ModelForm):
             'address_line_one',
             'address_line_two',
             'previous_call_center',
+            'currently_employed',
+            'current_employer',
+            'areas_of_expertise',
+            'languages',
         )
         widgets = {
             'national_id_type': forms.Select(attrs={
@@ -38,6 +57,7 @@ class ApplicationForm(forms.ModelForm):
             'national_id_number': forms.TextInput(attrs={
                     'placeholder': 'Enter your national ID here',
                     'class': 'form-control',
+                    'required': True,
                 },
             ),
             'email': forms.EmailInput(attrs={
@@ -79,7 +99,7 @@ class ApplicationForm(forms.ModelForm):
                 'placeholder': '',
                 'class': 'form-control datepicker',
             }),
-            'previous_call_center': forms.CheckboxSelectMultiple()
+            'previous_call_center': forms.CheckboxSelectMultiple(),
             # 'lived_in_usa': forms.CheckboxInput(attrs={
             #     'class': 'pretty p-switch p-fill p-primary',
             # }),
