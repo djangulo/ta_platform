@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block app_css %}
+{% endblock %}
+
+{% block page_title %}
+    {{ COMPANY_NAME }} | Apply
+{% endblock %}
+
+{% block header_text %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">Home</a></li>
+         &nbsp;>&nbsp;
+        <li><a href="{% url 'applications:apply' %}" class="active">Apply</a></li>
+        &nbsp;>&nbsp;
+        <li><a class="active">Thank you!</a></li>
+    </ol>
+{% endblock %}
+
+{% block nav-classes %}
+{% endblock %}
+
+{% block main_content %}
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-4">Thank you for your application!</h1>
+        <p class="lead">We've sent an email to {{ email }} to complete 
+            the application process. So you can participate in our referral program.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block app_js %}
+{% endblock %}
