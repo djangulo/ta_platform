@@ -12,8 +12,31 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import sys
+from django.urls import reverse_lazy
 
-from branding.vars import BRAND_DICT
+from .secrets import (
+    SECRET_KEY,
+    RABBITMQ_VHOST_PASSWD,
+    POSTGRES_PASSWD,
+    EMAIL_HOST_PASSWORD,
+)
+
+DEFAULT_BRAND_DICT = {
+    'COMPANY_NAME': 'JED Talent Acquisition',
+    'DEFAULT_FROM_EMAIL': 'no-reply@jedtac.com',
+    'HEADER_LOGO': 'img/LinekodelogoW.png',
+    'FAVICON': 'img/LinekodeIconB2.png',
+    'DEFAULT_AVATAR_MALE': '<i class="fas fa-chess-king"></i>',
+    'DEFAULT_AVATAR_FEMALE': '<i class="fas fa-chess-queen"></i>',
+    'DEFAULT_STYLESHEET': 'css/default-styles.css',
+}
+
+
+BRANDING = False
+if BRANDING:
+    from alorica_branding.vars import BRAND_DICT
+else:
+    BRAND_DICT = DEFAULT_BRAND_DICT
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -24,7 +47,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '+%g=v(%s4v6!%k5swwrox2cdo4kd=k4^crjia6j&l$b%)o^g2!'
+# SECRET_KEY = '+%g=v(%s4v6!%k5swwrox2cdo4kd=k4^crjia6j&l$b%)o^g2!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,7 +64,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
+    'simple_history',
+    'issue_tracker',
+    # 'django.contrib.sites',
     'debug_toolbar',
+    'admin_console',
     'accounts',
     'applications',
 ]
@@ -72,11 +100,12 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'recruitment.context_processors.get_brand_dict',
+                'recruitment.context_processors.get_brand_bool',
             ],
         },
     },
 ]
-
 WSGI_APPLICATION = 'recruitment.wsgi.application'
 
 
@@ -115,8 +144,22 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = 'accounts.USER'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'denis.angulo'
+# EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
+DEFAULT_FROM_EMAIL = DEFAULT_BRAND_DICT['DEFAULT_FROM_EMAIL']
+
+
+LOGIN_REDIRECT_URL = reverse_lazy('home')
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
+
 
 LANGUAGE_CODE = 'en-us'
 
@@ -135,8 +178,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'branding'),
+    # os.path.join(BASE_DIR, 'alorica_branding'), # off in the meantime
+    os.path.join(BASE_DIR, 'assets'),
 )
 INTERNAL_IPS = ['127.0.0.1']
 
@@ -145,3 +192,25 @@ APP_SETTINGS = {
         'MIN_DAYS_ALLOWED': 30,
     }
 }
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+
+# Django-channels settings
+
+ASGI_APPLICATION = 'recruitment.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)]
+        }
+    }
+}
+
+
+if BRANDING:
+    DEFAULT_FROM_EMAIL = BRAND_DICT['DEFAULT_FROM_EMAIL']
