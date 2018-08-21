@@ -1,3 +1,4 @@
+"""Accounts models module."""
 from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -10,24 +11,26 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from simple_history.models import HistoricalRecords
 
-from admin_console.models import AreaCode
-
-
 def user_directory_path(instance, filename):
+    """Saves user picture under settings.MEDIA_ROOT"""
     return f'user_{instance.id}/profile/{filename}'
 
 def reduce_to_alphanum(string):
+    """Removes all non alphanumeric characters from string."""
     return ''.join(c if c.isalnum() else '' for c in string)
 
 if not hasattr(Group, 'parent'):
+    #pylint: disable=C0103
     field = models.ForeignKey(Group, blank=True, null=True,
                               related_name='children',
                               on_delete=models.SET_NULL)
     field.contribute_to_class(Group, 'parent')
 
-
 class CustomUserManager(BaseUserManager):
+    """Base manager for user model."""
     def create_user(self, email, password=None, username=None, **extra_fields):
+        """Creates basic user with basic permissions (via ModGroup
+        assignment)."""
         if not email:
             raise ValueError('Users must have a valid email address')
         email = self.normalize_email(email)
@@ -40,8 +43,8 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-
-    def create_superuser(self, email, password, **extra_fields):
+    def create_superuser(self, email, password):
+        """Creates super user with all permissions."""
         user = self.create_user(email=email, password=password)
         user.is_admin = True
         user.is_active = True
@@ -49,10 +52,8 @@ class CustomUserManager(BaseUserManager):
         return user
 
 
-
-
-
 class User(AbstractBaseUser, PermissionsMixin):
+    """Base user model."""
     ACTIVE = 0
     TERMED = 1
     NEVER_EMPLOYED = 2
@@ -82,8 +83,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         if self.username:
             return self.username
-        else:
-            return self.email
+        return self.email
 
     def clean(self, *args, **kwargs):
         if self.username is None:
@@ -95,27 +95,44 @@ class User(AbstractBaseUser, PermissionsMixin):
         super(User, self).save(*args, **kwargs)
 
     def get_full_name(self):
+        """Returns full name of the user in the format
+        "first_name + last_name + username" (no email)."""
+        if self.first_names and self.last_names:
+            return "%s %s - %s" % (self.first_names, self.last_names, self.username)
         return self.username
 
     def get_short_name(self):
+        """Return user's username."""
         return self.username
 
     def has_perm(self, perm, obj=None):
         return True
-    
+
     def has_module_perms(self, app_label):
         return True
 
     @property
     def is_staff(self):
-        return True
-    
+        """Returns true if the user is the supervisor, admin or superuser groups."""
+        groups = self.groups.all().values_list('name', flat=True)
+        if any([
+                'superuser' in groups,
+                'admin' in groups,
+                'supervisor' in groups]):
+            return True
+        return False
+
     @property
     def is_superuser(self):
-        return True
+        """Returns true if the user is the superuser."""
+        if 'superuser' in self.groups.all().values_list('name', flat=True):
+            return True
+        return False
 
 
 class ModGroup(Group):
+    """Extended django.contrib.auth.models.Group with history and
+    created_at fields."""
     slug = models.SlugField(editable=False, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     last_modified = models.DateTimeField(auto_now=True, editable=False)
@@ -126,31 +143,41 @@ class ModGroup(Group):
                           on_delete=models.SET_NULL, null=True,
                           blank=True))
 
-    # class Meta:
-    #     proxy = True
+    class Meta:
+        permissions = (
+            ('view_mod_group', _('View groups')),
+        )
 
     def save(self, *args, **kwargs):
+        """Extended save but to implement the full_clean."""
         self.full_clean()
         super(ModGroup, self).save(*args, **kwargs)
 
     def clean(self, *args, **kwargs):
+        """Extended clean but to implement the auto-slug."""
         if self.slug is None:
             self.slug = slugify(self.name)
         super(ModGroup, self).clean(*args, **kwargs)
 
     def get_all_perms(self):
+        """Convenience method to return a concatenated string with all
+        permissions."""
         return ', '.join([p.name for p in self.permissions.all()])
 
     @property
     def _history_user(self):
         return self.modified_by
-    
+
     @_history_user.setter
     def _history_user(self, value):
         self.modified_by = value
 
 
 class NationalId(models.Model):
+    """
+    Simple national ID model with type & number fields, extended with a
+    history and user FKs.
+    """
     CEDULA = 0
     PASSPORT = 1
     SSN = 2
@@ -180,6 +207,11 @@ class NationalId(models.Model):
                           on_delete=models.SET_NULL, null=True,
                           blank=True))
 
+    class Meta:
+        permissions = (
+            ('view_national_id', _('View national id')),
+        )
+
     def save(self, *args, **kwargs):
         self.full_clean()
         super(NationalId, self).save(*args, **kwargs)
@@ -190,24 +222,26 @@ class NationalId(models.Model):
 
     def __str__(self):
         nat = self.id_number
-        t = self.id_type
-        if t == 0:
-            return '%s-%s-%s' % (nat[:3], nat[3:10], nat[-1:])
-        if t == 1:
-            return nat
-        if t == 2:
-            return '%s-%s-%s' % (nat[:3], nat[3:5], nat[-4:])
+        _type = self.id_type
+        if _type == 0:
+            _id = '%s-%s-%s' % (nat[:3], nat[3:10], nat[-1:])
+        elif _type == 1:
+            _id = nat
+        elif _type == 2:
+            _id = '%s-%s-%s' % (nat[:3], nat[3:5], nat[-4:])
+        return _id
 
     @property
     def _history_user(self):
         return self.modified_by
-    
+
     @_history_user.setter
     def _history_user(self, value):
         self.modified_by = value
 
 
 class Profile(models.Model):
+    """Model to contain additional, non-essential info from a user."""
     MALE = 0
     FEMALE = 1
     GENDER_CHOICES = (
@@ -245,7 +279,7 @@ class Profile(models.Model):
     @property
     def _history_user(self):
         return self.modified_by
-    
+
     @_history_user.setter
     def _history_user(self, value):
         self.modified_by = value

@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'guardian',
     'channels',
     'simple_history',
     'issue_tracker',
@@ -73,6 +74,14 @@ INSTALLED_APPS = [
     'accounts',
     'applications',
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
+)
+
+# GUARDIAN_GET_INIT_ANONYMOUS_USER = 'accounts.models.get_anonymous_user_instance'
+ANONYMOUS_USER_NAME = None
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
