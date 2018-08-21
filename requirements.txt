@@ -35,3 +35,4 @@ wrapt==1.10.11
 zope.interface==4.5.0
 selenium==3.14.0
 django-simple-history==2.3.0
+django-guardian==1.4.9
