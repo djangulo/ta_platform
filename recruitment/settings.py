@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'guardian',
     'channels',
     'simple_history',
+    'crispy_forms',
     'issue_tracker',
     # 'django.contrib.sites',
     'debug_toolbar',
