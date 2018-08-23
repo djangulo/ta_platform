@@ -68,6 +68,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, blank=True, null=True)
     first_names = models.CharField(max_length=100, blank=True, default='')
     last_names = models.CharField(max_length=100, blank=True, default='')
+    birth_date = models.DateField(blank=True, null=True)
     is_active = models.BooleanField(default=False)
     accepted_tos = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
@@ -81,8 +82,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        if self.username:
-            return self.username
         return self.email
 
     def clean(self, *args, **kwargs):
@@ -115,19 +114,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_staff(self):
         """Returns true if the user is the supervisor, admin or superuser groups."""
         groups = self.groups.all().values_list('name', flat=True)
-        if any([
-                'superuser' in groups,
-                'admin' in groups,
-                'supervisor' in groups]):
-            return True
-        return False
+        return any(['superuser' in groups,
+                    'admin' in groups,
+                    'supervisor' in groups])
 
     @property
     def is_superuser(self):
         """Returns true if the user is the superuser."""
-        if 'superuser' in self.groups.all().values_list('name', flat=True):
-            return True
-        return False
+        return 'superuser' in self.groups.all().values_list('name', flat=True)
 
 
 class ModGroup(Group):
@@ -139,14 +133,9 @@ class ModGroup(Group):
     history = HistoricalRecords()
     modified_by = (
         models.ForeignKey(settings.AUTH_USER_MODEL,
-                          related_name='%(app_label)s_%(class)s_last_modified',
+                          related_name='%(app_label)s_%(class)s_modified',
                           on_delete=models.SET_NULL, null=True,
                           blank=True))
-
-    class Meta:
-        permissions = (
-            ('view_mod_group', _('View groups')),
-        )
 
     def save(self, *args, **kwargs):
         """Extended save but to implement the full_clean."""
@@ -207,11 +196,6 @@ class NationalId(models.Model):
                           on_delete=models.SET_NULL, null=True,
                           blank=True))
 
-    class Meta:
-        permissions = (
-            ('view_national_id', _('View national id')),
-        )
-
     def save(self, *args, **kwargs):
         self.full_clean()
         super(NationalId, self).save(*args, **kwargs)
@@ -248,7 +232,6 @@ class Profile(models.Model):
         (MALE, _('Male')),
         (FEMALE, _('Female')),
     )
-    birth_date = models.DateField(blank=True, null=True)
     gender = models.IntegerField(choices=GENDER_CHOICES, default=MALE)
     bio = models.TextField(default='', blank=True)
     picture = models.ImageField(blank=True, null=True,
