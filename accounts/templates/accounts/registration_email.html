@@ -1,0 +1,20 @@
+{% load i18n %}
+{% autoescape off %}
+
+{% blocktrans %}
+Thank you for registering with {{ site_name }}.
+{% endblocktrans %}
+
+{% trans "Please follow the link below to complete your registration process." %}
+
+{% block reset_link %}
+{{ protocol }}://{{ domain }}{% url 'accounts:register_verify' uidb64=uid token=token %}
+{% endblock %}
+
+{% trans "Your username, in case you've forgotten:" %} {{ user.username }}
+
+{% trans "Thank you for using our site!" %}
+
+{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
+
+{% endautoescape %}

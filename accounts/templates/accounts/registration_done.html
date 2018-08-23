@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block app_css %}
+{% endblock %}
+
+{% block page_title %}
+    {{ COMPANY_NAME }} | {% trans "Sign up successful" %}
+{% endblock %}
+
+{% block header_text %}
+{% endblock %}
+
+{% block breadcrumbs %}
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+    &nbsp;>&nbsp;
+    <li><a class="active">{% trans "Sign up" %}</a></li>
+  </ol>
+{% endblock %}
+
+{% block main_content %}
+  <h4>{% trans "Sign Up complete" %}</h4>
+  <p>{% trans "We've sent you an email to verify your email address." %}</p>
+  <p>{% trans "You should be receiving our email shortly." %}</p>
+  <p><a href="{% url 'home' %}">{% trans "Home" %}</a></p>
+  <p><a href="{% url 'accounts:login' %}">{% trans "Login" %}</a></p>
+{% endblock %}
+
+{% block app_js %}
+{% endblock %}

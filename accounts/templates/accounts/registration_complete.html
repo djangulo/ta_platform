@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block app_css %}
+{% endblock %}
+
+{% block page_title %}
+    {{ COMPANY_NAME }} | {% trans "{{ user.username }} verified" %}
+{% endblock %}
+
+{% block header_text %}
+{% endblock %}
+
+{% block breadcrumbs %}
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+    &nbsp;>&nbsp;
+    <li><a class="active">{% trans "Sign up" %}</a></li>
+  </ol>
+{% endblock %}
+
+{% block main_content %}
+  <h4>{% trans "Registration complete" %}</h4>
+  <p>{% trans "You've now completed the registration process." %}</p>
+  {% url 'accounts:login' as loginurl %}
+  {% comment %} ### Not yet implemented ### {% url 'referrals:refer' as referurl %}{% endcomment %}
+  {% blocktrans %}
+  <p>You can now <a class="h5" href="{{ loginurl }}">Login</a> or <a class="h5" href="{{ referurl }}">start referring!</a> </p>
+  {% endblocktrans %}
+{% endblock %}
+
+{% block app_js %}
+{% endblock %}
