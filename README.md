@@ -1,2 +1,2 @@
-# recruitment manager application
+# TA platform application
 
