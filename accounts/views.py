@@ -22,7 +22,7 @@ from accounts.forms import (
     PasswordSetForm,
     RegistrationForm,
 )
-from accounts.models import User, Profile
+from accounts.models import User, Profile, NationalId
 from accounts.tokens import verify_token_generator
 
 # if settings.BRANDING:
@@ -67,12 +67,9 @@ class RegistrationView(generic.CreateView):
             'html_email_template_name': self.html_email_template_name,
             'extra_email_context': self.extra_email_context,
         }
+
         form.save(**opts)
         return HttpResponseRedirect(reverse_lazy('accounts:register_done'))
-
-    def form_invalid(self, form):
-        # import pdb; pdb.set_trace()
-        return super().form_invalid(form)
 
 
 class RegistrationDoneView(generic.TemplateView):

@@ -237,6 +237,12 @@ class RegistrationForm(forms.ModelForm):
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
+        NationalId.objects.create(
+            id_type=self.cleaned_data['national_id_type'],
+            id_number=self.cleaned_data['national_id_number'],
+            user=user,
+            is_verified=False
+        )
         email = self.cleaned_data["email"]
         for user in self.get_inactive_users(email):
             if not domain_override:

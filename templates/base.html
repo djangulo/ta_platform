@@ -46,7 +46,7 @@
                 <div class="dropdown-menu dropdown-menu-right">
                   <a class="dropdown-item disabled">{{ user.username }}</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Your profile</a>
+                  <a class="dropdown-item" href="{% url 'accounts:profile' pk=user.pk %}">Your profile</a>
                   <a class="dropdown-item" href="#">Your referrals</a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log out</a>
