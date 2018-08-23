@@ -201,7 +201,10 @@ INTERNAL_IPS = ['127.0.0.1']
 APP_SETTINGS = {
     'applications': {
         'MIN_DAYS_ALLOWED': 30,
-    }
+    },
+    'accounts': {
+        'ENFORCE_MIN_AGE': True,
+    },
 }
 
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
@@ -222,6 +225,12 @@ CHANNEL_LAYERS = {
     }
 }
 
+# crispy-forms settings
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+# CRISPY_CLASS_CONVERTERS = {
+#     'textinput': 'form-control',
+
+# }
 
 if BRANDING:
     DEFAULT_FROM_EMAIL = BRAND_DICT['DEFAULT_FROM_EMAIL']
