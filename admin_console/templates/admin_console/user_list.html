@@ -1,0 +1,82 @@
+{% extends 'admin_console/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block app_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/pretty-checkbox-overrides.css' %}" />
+<link rel="stylesheet" href="{% static 'admin_console/css/admin-console-styles.css' %}" />
+{% endblock %}
+
+{% block page_title %}
+    {{ COMPANY_NAME }} | Apply
+{% endblock %}
+
+{% block header_text %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ol class="breadcrumb">
+         <li><a href="{% url 'admin_console:home' %}">{% trans "Admin" %}</a></li>
+         &nbsp;>&nbsp;
+         <li><a href="{% url 'admin_console:accounts' %}">{% trans "Accounts" %}</a></li>
+         &nbsp;>&nbsp;
+         <li>{% trans "Groups" %}</li>
+    </ol>
+{% endblock %}
+
+{% block nav-classes %}
+{% endblock %}
+
+{% block main_content %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <h1>Groups</h1>
+    <p>
+        {% trans "Groups represent the basics building blocks for permission management within this application. Each user can have as many permissions as you'd like, and you can create new and modify them as it best fits your organization. We've configured some initial settings for you, but you can modify them to your preference, or create new ones." %}
+    </p>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">{% trans "Name" %}</th>
+                <th scope="col">{% trans "National ID" %}</th>
+                <th scope="col">{% trans "Email" %}</th>
+                <th scope="col">{% trans "Status" %}</th>
+                <th scope="col">{% trans "Primary phone" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in user_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'admin_console:user-detail' pk=user.pk %}">
+                            </a>
+                            <a href="{% url 'admin_console:user-edit' pk=user.pk %}">
+                                {% trans "Edit" %}
+                            </a>
+                        </td>
+                        <td>{{ user.profile.first_names }} {{ user.profile.last_names }}</td>
+                        <td>{{ user.profile.get_natid_display }}</td>
+                        <td>{{ user.profile.email }}</td>
+                        <td>{{ user.profile.get_employee_status_display }}</td>
+                        <td>{{ user.profile.get_primary_phone_display }}</td>
+                    </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block app_js %}
+<script>
+    $("table").on("click", "tr", function(e) {
+        if ($(e.target).is("a,input")) // anything else you don't want to trigger the click
+            return;
+        location.href = $(this).find("a").attr("href");
+    });
+</script>
+{% endblock %}

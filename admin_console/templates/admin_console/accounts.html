@@ -1,0 +1,42 @@
+{% extends 'admin_console/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block app_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/pretty-checkbox-overrides.css' %}" />
+{% endblock %}
+
+{% block page_title %}
+    {{ COMPANY_NAME }} | Site administration
+{% endblock %}
+
+{% block header_text %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'admin_console:home' %}">{% trans "Admin" %}</a></li>
+         &nbsp;>&nbsp;
+         <li>{% trans "Accounts" %}</li>
+    </ol>
+{% endblock %}
+
+{% block nav-classes %}
+{% endblock %}
+
+{% block main_content %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <h1>{% trans "Accounts administration" %}</h1>
+    <p>{% trans "Manage users, groups and permissions." %}</p>
+    {% include 'admin_console/accounts_table.html' %}
+{% endblock %}
+
+{% block app_js %}
+{% endblock %}

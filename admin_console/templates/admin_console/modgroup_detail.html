@@ -1,0 +1,89 @@
+{% extends 'admin_console/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block app_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/pretty-checkbox-overrides.css' %}" />
+{% endblock %}
+
+{% block page_title %}
+    {{ COMPANY_NAME }} | Apply
+{% endblock %}
+
+{% block header_text %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'admin_console:home' %}">Admin</a></li>
+        &nbsp;>&nbsp;
+        <li><a href="{% url 'admin_console:accounts' %}">{% trans "Accounts" %}</a></li>
+        &nbsp;>&nbsp;
+        <li><a href="{% url 'admin_console:group-list' %}">Groups</a></li>
+        &nbsp;>&nbsp;
+        <li>{{ object.name }}</li>
+    </ol>
+{% endblock %}
+
+{% block nav-classes %}
+{% endblock %}
+
+{% block main_content %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+        <h1>{{ object.name }}</h1>
+        <h3>Permissions:</h3>
+        <a href="{% url 'admin_console:group-edit' slug=object.slug %}">
+            <button type="button" class="btn btn-primary">
+                {% trans "Edit" %}
+            </button>
+        </a>
+        <button type="button" class="btn btn-danger">{% trans "Delete" %}</button>
+        <ol>
+            {% for perm in permissions %}
+            <li>{{ perm.name }}</td>
+            {% endfor %}
+        </ol>
+{% endblock %}
+
+{% block app_js %}
+<script>
+    $('table').on('click', 'tr', function(el) {
+        location.href = $(this).find("a").attr("href");
+    })
+</script>
+{% comment %} <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script>
+    $(document).ready(function() {
+
+        $('#id_application-birth_date').datepicker({
+            format: 'dd/mm/yyyy'
+        });
+    });
+</script>
+<script>
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.getElementsByClassName('needs-validation');
+    // Loop over them and prevent submission
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated', 'alorica-validated');
+      }, false);
+    });
+  }, false);
+})();
+</script> {% endcomment %}
+{% endblock %}

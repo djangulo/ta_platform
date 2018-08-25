@@ -1,0 +1,21 @@
+{% load i18n %}
+<table class="table">
+    <thead>
+        <th scope="col" colspan="5">{% trans "Accounts" %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td colspan="3"><a href="{% url 'admin_console:group-list' %}">{% trans "Groups" %}</a></td>
+        <td colspan="1"><a href="{% url 'admin_console:group-add' %}">{% trans "Add" %}</a></td>
+    </tr>
+    <tr>
+        <td colspan="3"><a href="{% url 'admin_console:user-list' %}">{% trans "Users" %}</a></td>
+        <td colspan="1"><a href="{% url 'admin_console:user-add' %}">{% trans "Add" %}</a></td>
+    </tr>
+    <tr>
+        <td colspan="3"><a href="{% url 'admin_console:user-list' %}">{% trans "Permissions" %}</a></td>
+        <td colspan="1"><a href="{% url 'admin_console:user-add' %}">{% trans "Add" %}</a></td>
+    </tr>
+</tbody>
+</table>

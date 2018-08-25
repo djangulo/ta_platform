@@ -1,0 +1,78 @@
+{% extends 'admin_console/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block app_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/pretty-checkbox-overrides.css' %}" />
+<link rel="stylesheet" href="{% static 'admin_console/css/admin-console-styles.css' %}" />
+{% endblock %}
+
+{% block page_title %}
+    {{ COMPANY_NAME }} | Apply
+{% endblock %}
+
+{% block header_text %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ol class="breadcrumb">
+         <li><a href="{% url 'admin_console:home' %}">{% trans "Admin" %}</a></li>
+         &nbsp;>&nbsp;
+         <li><a href="{% url 'admin_console:accounts' %}">{% trans "Accounts" %}</a></li>
+         &nbsp;>&nbsp;
+         <li>{% trans "Groups" %}</li>
+    </ol>
+{% endblock %}
+
+{% block nav-classes %}
+{% endblock %}
+
+{% block main_content %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <h1>Groups</h1>
+    <p>
+        {% trans "Groups represent the basics building blocks for permission management within this application. Each group can have as many permissions as you'd like, and you can create new and modify them as it best fits your organization. We've configured some initial settings for you, but you can modify them to your preference, or create new ones." %}
+    </p>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">{% trans "Group" %}</th>
+                <th scope="col">{% trans "Slug" %}</th>
+                <th scope="col">{% trans "Permissions  (hover to display)" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for group in modgroup_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'admin_console:group-detail' slug=group.slug %}">
+                            </a>
+                            <a href="{% url 'admin_console:group-edit' slug=group.slug %}">
+                                {% trans "Edit" %}
+                            </a>
+                        </td>
+                        <td>{{ group.name }}</td>
+                        <td><a href="{% url 'admin_console:group-detail' slug=group.slug %}"></a>{{ group.slug }}</a></td>
+                        <td data-toggle="tooltip" data-placement="top" title="{{ group.get_all_perms }}">{{ group.get_all_perms|slice:":50" }}&#8230;</td>
+                    </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block app_js %}
+<script>
+    $("table").on("click", "tr", function(e) {
+        if ($(e.target).is("a,input")) // anything else you don't want to trigger the click
+            return;
+        location.href = $(this).find("a").attr("href");
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'admin_console/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block app_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/pretty-checkbox-overrides.css' %}" />
+<link rel="stylesheet" href="{% static 'admin_console/css/widgets.css' %}" />
+{{ form.media }}
+{% endblock %}
+
+{% block page_title %}
+    {{ COMPANY_NAME }} | Apply
+{% endblock %}
+
+{% block header_text %}
+{% endblock %}
+
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+        <li><a href="{% url 'admin_console:home' %}">{% trans "Admin" %}</a></li>
+        &nbsp;>&nbsp;
+        <li><a href="{% url 'admin_console:accounts' %}">{% trans "Accounts" %}</a></li>
+        &nbsp;>&nbsp;
+        <li><a href="{% url 'admin_console:group-list' %}">{% trans "Groups" %}</a></li>
+        &nbsp;>&nbsp;
+        {% if object %}
+            <li><a href="{% url 'admin_console:group-detail' slug=object.slug %}">{{ object.name }}</a></li>
+            &nbsp;>&nbsp;
+            <li>{% trans "Edit" %}</li>
+        {% else %}
+            <li>{% trans "Add" %}</li>
+        {% endif %}
+    </ol>
+{% endblock %}
+
+{% block nav-classes %}
+{% endblock %}
+
+{% block main_content %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <form id="group-form" class="needs-validation" action="" method="POST" novalidate="novalidate">
+        {% csrf_token %}
+        {% for error in form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endfor %}
+        
+        <div class="form-row">
+            <div class="col-sm-8">
+                <label class="control-label" for="{{ form.name.html_name }}">
+                    {{ form.name.label }}
+                </label>
+                {{ form.name }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-sm-12 col-md-8 mb-3">
+                <label class="control-label" for="{{ form.permissions.html_name }}">
+                    {{ form.permissions.label }}
+                </label>
+                {{ form.permissions }}
+                <div class="invalid-feedback">This field is required.</div>
+                {% for e in form.permissions.errors %}
+                    <div class="invalid-feedback">{{ e }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <input class="btn btn-primary alorica-dark-blue-bg" type="save" value="Save">
+    </form>
+{% endblock %}
+
+{% block app_js %}
+{% endblock %}

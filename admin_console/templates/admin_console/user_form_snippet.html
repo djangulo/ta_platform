@@ -1,0 +1,145 @@
+<form id="profile-form" class="needs-validation" action="" method="POST" novalidate="novalidate">
+    {% csrf_token %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endfor %}
+    <div class="form-row">
+        <div class="col-sm-12 col-md-4 mb-3">
+            <label class="control-label" for="{{ form.natid_type.html_name }}">
+                {{ form.natid_type.label }}
+            </label>
+            {{ form.natid_type }}
+        </div>
+        <div class="col-sm-12 col-md-8 mb-3">
+            <label class="control-label" for="{{ form.natid.html_name }}">
+                {{ form.natid.label }}
+            </label>
+            {{ form.natid }}
+            <div class="invalid-feedback">This field is required.</div>
+            {% for e in form.natid.errors %}
+                <div class="invalid-feedback">{{ e }}</div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-sm-12 col-md-6 mb-3">
+            <label class="control-label" for="{{ form.first_names.html_name }}">
+                {{ form.first_names.label }}
+            </label>
+            {{ form.first_names }}
+            <div class="invalid-feedback">This field is required.</div>
+            {% for e in form.first_names.errors %}
+                <div class="invalid-feedback">{{ e }}</div>
+            {% endfor %}
+        </div>
+        <div class="col-sm-12 col-md-6 mb-3">
+            <label class="control-label" for="{{ form.last_names.html_name }}">
+                {{ form.last_names.label }}
+            </label>
+            {{ form.last_names }}
+            <div class="invalid-feedback">This field is required.</div>
+            {% for e in form.last_names.errors %}
+                <div class="invalid-feedback">{{ e }}</div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-sm-12 col-md-6 mb-3">
+            <label class="control-label" for="{{ form.email.html_name }}">
+                {{ form.email.label }}
+            </label>
+            {{ form.email }}
+            <div class="invalid-feedback">This field is required.</div>
+            {% for e in form.email.errors %}
+            <div class="invalid-feedback">{{ e }}</div>
+            {% endfor %}
+        </div>
+        <div class="col-sm-12 col-md-6 mb-3">
+            <label class="control-label" for="{{ form.display_name.html_name }}">
+                {{ form.display_name.label }}
+            </label>
+            {{ form.display_name }}
+            <div class="invalid-feedback">This field is required.</div>
+            {% for e in form.display_name.errors %}
+            <div class="invalid-feedback">{{ e }}</div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+            <div class="col-sm-12 col-md-6 mb-3">
+                <label class="control-label" for="{{ form.primary_phone.html_name }}">
+                    {{ form.primary_phone.label }}
+                </label>
+                {{ form.primary_phone }}
+                <div class="invalid-feedback">This field is required.</div>
+                {% for e in form.primary_phone.errors %}
+                    <div class="invalid-feedback">{{ e }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-sm-12 col-md-6 mb-3">
+                <label class="control-label" for="{{ form.secondary_phone.html_name }}">
+                    {{ form.secondary_phone.label }}
+                </label>
+                {{ form.secondary_phone }}
+            </div>
+        </div>
+    <div class="form-row">
+        <div class="col-sm-12 col-md-4 mb-3">
+            <label class="control-label" for="{{ form.gender.html_name }}">
+                {{ form.gender.label }}
+            </label>
+            {{ form.gender }}
+        </div>
+        <div class="col-sm-12 col-md-4 mb-3">
+            <label class="control-label" for="{{ form.birth_date.html_name }}">
+                {{ form.birth_date.label }}
+            </label>
+            {{ form.birth_date }}
+            <div class="invalid-feedback">This field is required.</div>
+            {% for e in form.birth_date.errors %}
+            <div class="invalid-feedback">{{ e }}</div>
+            {% endfor %}
+        </div>
+        <div class="col-sm-12 col-md-4 mb-3">
+            <label class="control-label" for="{{ form.employee_status.html_name }}">
+                {{ form.employee_status.label }}
+            </label>
+            {{ form.employee_status }}
+        </div>
+    </div>
+    <div class="form-row">
+            <div class="col-sm-12 col-md-8 mb-3">
+                <label class="control-label" for="{{ form.bio.html_name }}">
+                    {{ form.bio.label }}
+                </label>
+                {{ form.bio }}
+                <div class="invalid-feedback">This field is required.</div>
+                {% for e in form.bio.errors %}
+                <div class="invalid-feedback">{{ e }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-sm-12 col-md-12 mb-3">
+                <label class="control-label" for="{{ form.picture.html_name }}">
+                    {{ form.picture.label }}
+                </label>
+                {{ form.picture }}
+            </div>
+        </div>
+    <div class="form-row">
+        <div class="col-sm-12 col-md-8 mb-3">
+            <label class="control-label" for="{{ form.groups.html_name }}">
+                {{ form.groups.label }}
+            </label>
+            {{ form.groups }}
+            <div class="invalid-feedback">This field is required.</div>
+            {% for e in form.groups.errors %}
+            <div class="invalid-feedback">{{ e }}</div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <input class="btn btn-primary alorica-dark-blue-bg" type="submit">
+    <a href="{% url 'admin_console:user-list' %}">
+        <button class="btn" type="button" >Cancel</button> 
+    </a>
+</form>

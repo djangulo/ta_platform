@@ -1,0 +1,59 @@
+{% extends 'admin_console/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block app_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/pretty-checkbox-overrides.css' %}" />
+{% endblock %}
+
+{% block page_title %}
+    {{ COMPANY_NAME }} | Apply
+{% endblock %}
+
+{% block header_text %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'admin_console:home' %}">{% trans "Admin" %}</a></li>
+        &nbsp;>&nbsp;
+        <li><a href="{% url 'admin_console:accounts' %}">{% trans "Accounts" %}</a></li>
+        &nbsp;>&nbsp;
+        <li><a href="{% url 'admin_console:user-list' %}">{% trans "Users" %}</a></li>
+        &nbsp;>&nbsp;
+        <li>{{ object.name }}</li>
+    </ol>
+{% endblock %}
+
+{% block nav-classes %}
+{% endblock %}
+
+{% block main_content %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% with object as p %}
+        <h1 class="mb-0">{{ p.first_names }} {{ p.last_names }}</h1>
+        <small class="text-muted">@{{ p.display_name }}</small>
+        <h3>Groups:</h3>
+        <a href="{% url 'admin_console:user-edit' pk=object.pk %}">
+            <button type="button" class="btn btn-primary">
+                {% trans "Edit" %}
+            </button>
+        </a>
+        <button type="button" class="btn btn-danger">{% trans "Delete" %}</button>
+        <ol>
+            {% for g in groups %}
+            <li>{{ g.name }}</td>
+            {% endfor %}
+        </ol>
+    {% endwith %}
+{% endblock %}
+
+{% block app_js %}
+{% comm
+{% endblock %}
