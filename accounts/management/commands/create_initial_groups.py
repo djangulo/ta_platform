@@ -15,6 +15,9 @@ class Command(BaseCommand):
             Group.objects.get_or_create(name='superuser',
                                         is_supervisor=True,
                                         is_admin=True))
+        self.stdout.write("\n Creating group %s..." % superusers, ending="")
+        self.stdout.write(self.style.SUCCESS(" OK"))
+        self.stdout.flush()                                        
         if superusers_created:
             for perm in Permission.objects.all():
                 superusers.permissions.add(perm)
@@ -24,6 +27,9 @@ class Command(BaseCommand):
             Group.objects.get_or_create(name='admin',
                                         is_supervisor=True,
                                         is_admin=True))
+        self.stdout.write(" Creating group %s..." % admins, ending="")
+        self.stdout.write(self.style.SUCCESS(" OK"))
+        self.stdout.flush()
         # if admins_created:
             # for p in Permission.objects.all().filter(
             #         Q(name__icontains='entry') |
@@ -116,7 +122,7 @@ class Command(BaseCommand):
                                         is_supervisor=True,
                                         is_admin=False))
         self.stdout.write(" Creating group %s..." % BOT, ending="")
-        self.stdout.write(self.style.SUCCESS(" OK"))
+        self.stdout.write(self.style.SUCCESS(" OK\n"))
         self.stdout.flush()
         # if staff_created:
         #     for p in Permission.objects.all().filter(

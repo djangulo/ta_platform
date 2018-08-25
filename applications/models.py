@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from string import punctuation
 
-from accounts.models import Person, User
+from accounts.models import Profile, User
 
 class SupportModel(models.Model):
     display_in_form = models.BooleanField(default=False, blank=False)
@@ -100,18 +100,18 @@ class Application(models.Model):
     current_employer = models.CharField(max_length=50, blank=True)
 
     languages = models.ManyToManyField(
-        'applications.Language',
+        'admin_console.Language',
         related_name='applicants',
         blank=True,
     )
     previous_call_center_xp = models.BooleanField(default=False, blank=True)
     previous_call_center = models.ManyToManyField(
-        'applications.CallCenter',
+        'admin_console.CallCenter',
         related_name='applications',
         blank=True,
     )
     city_or_town = models.ForeignKey(
-        'applications.CityTown',
+        'admin_console.CityTown',
         related_name='applications',
         on_delete=models.SET_NULL,
         blank=True,
@@ -119,7 +119,7 @@ class Application(models.Model):
     )
 
     areas_of_expertise = models.ManyToManyField(
-        'applications.AreaOfExpertise',
+        'admin_console.AreaOfExpertise',
         related_name='applicants',
         blank=True,
     )
@@ -129,8 +129,8 @@ class Application(models.Model):
     tss = models.BooleanField(default=False, blank=True)
     hm_interview = models.BooleanField(default=False, blank=True)
 
-    person = models.ForeignKey(
-        'accounts.Person',
+    user = models.ForeignKey(
+        'accounts.User',
         related_name='applications',
         on_delete=models.SET_NULL,
         blank=True,

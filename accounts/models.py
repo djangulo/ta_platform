@@ -5,6 +5,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
     Group,
+    GroupManager,
 )
 from django.db import models
 from django.utils.text import slugify
@@ -26,9 +27,102 @@ if not hasattr(Group, 'parent'):
                               on_delete=models.SET_NULL)
     field.contribute_to_class(Group, 'parent')
 
+
+class EmailAddressManager(models.Manager):
+    def set_as_primary(self, email, user=None):
+        """
+        Sets an email as primary for a particular user.
+        """
+        if isinstance(email, int):
+            email = self.get_queryset().get(pk=email)
+        if isinstance(email, str):
+            email = self.get_queryset().get(email=email)
+        if user is None:
+            user = email.user
+        user.email_addresses.all().update(is_primary=False)
+        self.get_queryset().filter(pk=email.pk).update(is_primary=True)
+        return email
+
+
+class EmailAddress(models.Model):
+    """Email address model."""
+    email = models.EmailField(unique=True, blank=False, null=False)
+    is_primary = models.BooleanField(default=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        blank=False,
+        null=False,
+        related_name='email_addresses',
+    )
+
+    objects = EmailAddressManager()
+
+    def __str__(self):
+        return '%s: %s' % (self.user.username, self.email,)
+
+    def save(self, *args, **kwargs):
+        if self.user.email_addresses.count() == 0:
+            self.is_primary = True
+        self.full_clean()
+        super(EmailAddress, self).save(*args, **kwargs)
+
+
+class ModGroupManager(models.Manager):
+    def get_supervisor_groups(self):
+        return super(ModGroupManager, self
+                    ).get_queryset().filter(is_supervisor=True)
+
+    def get_admin_groups(self):
+        return super(ModGroupManager, self
+                    ).get_queryset().filter(is_admin=True)                    
+
+
+class ModGroup(Group):
+    """Extended django.contrib.auth.models.Group with history and
+    created_at fields."""
+    slug = models.SlugField(editable=False, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    last_modified = models.DateTimeField(auto_now=True, editable=False)
+    is_supervisor = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    history = HistoricalRecords()
+    modified_by = (
+        models.ForeignKey(settings.AUTH_USER_MODEL,
+                          related_name='%(app_label)s_%(class)s_modified',
+                          on_delete=models.SET_NULL, null=True,
+                          blank=True))
+    objects = GroupManager()
+    mod_manager = ModGroupManager()
+
+    def save(self, *args, **kwargs):
+        """Extended save but to implement the full_clean."""
+        self.full_clean()
+        super(ModGroup, self).save(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        """Extended clean but to implement the auto-slug."""
+        if self.slug is None:
+            self.slug = slugify(self.name)
+        super(ModGroup, self).clean(*args, **kwargs)
+
+    def get_all_perms(self):
+        """Convenience method to return a concatenated string with all
+        permissions."""
+        return ', '.join([p.name for p in self.permissions.all()])
+
+    @property
+    def _history_user(self):
+        return self.modified_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.modified_by = value
+
+
 class CustomUserManager(BaseUserManager):
     """Base manager for user model."""
-    def create_user(self, email, password=None, username=None, **extra_fields):
+    def create_user(self, username, email, password=None, **extra_fields):
         """Creates basic user with basic permissions (via ModGroup
         assignment)."""
         if not email:
@@ -36,20 +130,27 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         if password is None:
             password = self.make_random_password()
-        if username is None:
-            username = email.split('@')[0]
-        user = self.model(email=email, username=username, **extra_fields)
+        user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        EmailAddress.objects.create(email=email, is_primary=True, user=user)
         return user
 
-    def create_superuser(self, email, password):
+    def create_superuser(self, username, email, password):
         """Creates super user with all permissions."""
-        user = self.create_user(email=email, password=password)
+        user = self.create_user(username=username,
+                                email=email,
+                                password=password)
         user.is_admin = True
         user.is_active = True
         user.save(using=self._db)
         return user
+
+    def get_mod_group_permissions(self):
+        """
+        Implemented because Django refuses to let extended Group models
+        live.
+        """
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -64,8 +165,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         (NEVER_EMPLOYED, _('Never worked for us')),
         (NON_REHIRABLE, _('Non-rehirable')),
     )
-    email = models.EmailField(blank=False, unique=True)
-    username = models.CharField(max_length=50, blank=True, null=True)
+    username = models.CharField(max_length=30, unique=True, blank=True, null=True)
+    username_slug = models.SlugField(unique=True, editable=False, blank=True, null=True)
     first_names = models.CharField(max_length=100, blank=True, default='')
     last_names = models.CharField(max_length=100, blank=True, default='')
     birth_date = models.DateField(blank=True, null=True)
@@ -78,15 +179,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return self.email
+        return self.username
 
     def clean(self, *args, **kwargs):
-        if self.username is None:
-            self.username = self.email.split('@')[0]
+        self.slug = slugify(self.username)
         super(User, self).clean(*args, **kwargs)
 
     def save(self, *args, **kwargs):
@@ -114,52 +214,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_staff(self):
         """Returns true if the user is the supervisor, admin or superuser groups."""
         groups = self.groups.all().values_list('name', flat=True)
-        return any(['superuser' in groups,
-                    'admin' in groups,
-                    'supervisor' in groups])
+        supervisor_groups = (
+            ModGroup
+            .objects
+            .get_supervisor_groups()
+            .values_list('name', flat=True))
+        return bool(set(groups).intersection(set(supervisor_groups)))
 
     @property
     def is_superuser(self):
         """Returns true if the user is the superuser."""
         return 'superuser' in self.groups.all().values_list('name', flat=True)
-
-
-class ModGroup(Group):
-    """Extended django.contrib.auth.models.Group with history and
-    created_at fields."""
-    slug = models.SlugField(editable=False, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    last_modified = models.DateTimeField(auto_now=True, editable=False)
-    history = HistoricalRecords()
-    modified_by = (
-        models.ForeignKey(settings.AUTH_USER_MODEL,
-                          related_name='%(app_label)s_%(class)s_modified',
-                          on_delete=models.SET_NULL, null=True,
-                          blank=True))
-
-    def save(self, *args, **kwargs):
-        """Extended save but to implement the full_clean."""
-        self.full_clean()
-        super(ModGroup, self).save(*args, **kwargs)
-
-    def clean(self, *args, **kwargs):
-        """Extended clean but to implement the auto-slug."""
-        if self.slug is None:
-            self.slug = slugify(self.name)
-        super(ModGroup, self).clean(*args, **kwargs)
-
-    def get_all_perms(self):
-        """Convenience method to return a concatenated string with all
-        permissions."""
-        return ', '.join([p.name for p in self.permissions.all()])
-
-    @property
-    def _history_user(self):
-        return self.modified_by
-
-    @_history_user.setter
-    def _history_user(self, value):
-        self.modified_by = value
 
 
 class NationalId(models.Model):

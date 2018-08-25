@@ -14,7 +14,7 @@ class BaseSupportModel(models.Model):
     last_modified = models.DateTimeField(auto_now=True, editable=False)
     modified_by = (
         models.ForeignKey(settings.AUTH_USER_MODEL,
-                          related_name='%(app_label)s_%(class)s_last_modified',
+                          related_name='%(app_label)s_%(class)s_modified_by',
                           on_delete=models.SET_NULL, null=True,
                           blank=True))
     history = HistoricalRecords()
@@ -190,9 +190,26 @@ class AreaCode(BaseSupportModel):
         ordering = ('name',)
 
 
+class PhoneNumberManager(models.Manager):
+    def set_as_primary(self, phone_number, user=None):
+        """
+        Sets an phone number as primary for a particular user.
+        """
+        if isinstance(phone_number, int):
+            phone_number = self.get_queryset().get(pk=phone_number)
+        if isinstance(phone_number, str):
+            phone_number = self.get_queryset().get(phone_number=phone_number)
+        if user is None:
+            user = phone_number.user
+        user.email_addresses.all().update(is_primary=False)
+        self.get_queryset().filter(pk=phone_number.pk).update(is_primary=True)
+        return phone_number
+
+
 class PhoneNumber(models.Model):
     """Model to unify all Phone related stuff."""
     phone_number = models.CharField(max_length=12, blank=False)
+    is_primary = models.BooleanField(default=False)
     area_code = models.ForeignKey(
         'admin_console.AreaCode',
         related_name='phone_numbers',
@@ -204,8 +221,8 @@ class PhoneNumber(models.Model):
         settings.AUTH_USER_MODEL,
         related_name='phone_numbers',
         on_delete=models.CASCADE,
-        blank=True,
-        null=True
+        blank=False,
+        null=False
     )
 
     def __str__(self):
