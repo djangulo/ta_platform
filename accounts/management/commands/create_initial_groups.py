@@ -1,8 +1,8 @@
 """Creates groups and base permissions for each group"""
 from django.core.management.base import BaseCommand, CommandError
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, Group
 
-from accounts.models import ModGroup as Group
+# from accounts.models import ModGroup as Group
 from django.db.models import Q
 
 class Command(BaseCommand):
