@@ -6,10 +6,12 @@ from django.contrib.auth.models import (
     PermissionsMixin,
     Group,
     GroupManager,
+    Permission
 )
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+from simple_history import register
 from simple_history.models import HistoricalRecords
 
 def user_directory_path(instance, filename):
@@ -20,15 +22,53 @@ def reduce_to_alphanum(string):
     """Removes all non alphanumeric characters from string."""
     return ''.join(c if c.isalnum() else '' for c in string)
 
-if not hasattr(Group, 'parent'):
-    #pylint: disable=C0103
-    field = models.ForeignKey(Group, blank=True, null=True,
-                              related_name='children',
-                              on_delete=models.SET_NULL)
-    field.contribute_to_class(Group, 'parent')
+# if not hasattr(Group, 'parent'):
+#     #pylint: disable=C0103
+#     field = models.ForeignKey(Group, blank=True, null=True,
+#                               related_name='children',
+#                               on_delete=models.SET_NULL)
+#     field.contribute_to_class(Group, 'parent')
 
+
+NON_EDITABLE_GROUPS = [
+    'superuser',
+    'admin',
+    'supervisor',
+    'human_resources',
+    'recruiter',
+    'sourcer',
+    'hiring_manager',
+    'lab_manager',
+    'reporting',
+    'payroll',
+    'employee',
+    'candidate',
+    'ANON',
+    'BOT',
+]
+
+def get_group_user(instance, **kwargs):
+    return instance.modified_by
+
+# register(Poll, get_user=get_poll_user)
+
+# monkey-patch original Group model
+# Group.add_to_class('modified_by', models.ForeignKey(
+#     'accounts.User',
+#     on_delete=models.CASCADE,
+#     blank=True,
+#     null=True,
+#     related_name='%(app_label)s_%(class)s_modified_by',
+# ))
+Group.add_to_class('is_supervisor', models.BooleanField(default=False))
+Group.add_to_class('is_admin', models.BooleanField(default=False))
+# Group.add_to_class('history', HistoricalRecords())
+# simple_history register Groups and Permissions
+register(Group)
+register(Permission)
 
 class EmailAddressManager(models.Manager):
+    """Custom manager for email addresses."""
     def set_as_primary(self, email, user=None):
         """
         Sets an email as primary for a particular user.
@@ -69,6 +109,7 @@ class EmailAddress(models.Model):
 
 
 class ModGroupManager(models.Manager):
+    """Custom manager for ModGroup."""
     def get_supervisor_groups(self):
         return super(ModGroupManager, self
                     ).get_queryset().filter(is_supervisor=True)
@@ -81,35 +122,142 @@ class ModGroupManager(models.Manager):
 class ModGroup(Group):
     """Extended django.contrib.auth.models.Group with history and
     created_at fields."""
-    slug = models.SlugField(editable=False, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    last_modified = models.DateTimeField(auto_now=True, editable=False)
-    is_supervisor = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
-    history = HistoricalRecords()
-    modified_by = (
-        models.ForeignKey(settings.AUTH_USER_MODEL,
-                          related_name='%(app_label)s_%(class)s_modified',
-                          on_delete=models.SET_NULL, null=True,
-                          blank=True))
-    objects = GroupManager()
+
     mod_manager = ModGroupManager()
 
-    def save(self, *args, **kwargs):
-        """Extended save but to implement the full_clean."""
-        self.full_clean()
-        super(ModGroup, self).save(*args, **kwargs)
-
-    def clean(self, *args, **kwargs):
-        """Extended clean but to implement the auto-slug."""
-        if self.slug is None:
-            self.slug = slugify(self.name)
-        super(ModGroup, self).clean(*args, **kwargs)
+    class Meta:
+        proxy = True
 
     def get_all_perms(self):
         """Convenience method to return a concatenated string with all
         permissions."""
-        return ', '.join([p.name for p in self.permissions.all()])
+        return ', '.join([p.codename for p in self.permissions.all()])
+
+    @property
+    def _editable(self):
+        if not self.name in NON_EDITABLE_GROUPS:
+            return True
+        return False
+
+
+class AreaCode(models.Model):
+    """Area code model to display in application form."""
+    PREFIX_CHOICES = [
+        '+1',
+        '+502',
+        '+504',
+        '+507',
+        '+509',
+        '+51',
+        '+52',
+        '+55',
+        '+58',
+        '+63',
+    ]
+    display_in_form = models.BooleanField(default=False, blank=False)
+    name = models.CharField(max_length=50, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    last_modified = models.DateTimeField(auto_now=True, editable=False)
+    modified_by = (
+        models.ForeignKey(settings.AUTH_USER_MODEL,
+                          related_name='%(app_label)s_%(class)s_modified_by',
+                          on_delete=models.SET_NULL, null=True,
+                          blank=True))
+    history = HistoricalRecords()
+    PREFIX_CHOICES = [
+        (i, c) for i, c in zip(
+            list(range(len(PREFIX_CHOICES))), PREFIX_CHOICES)]
+    country = models.ForeignKey('admin_console.Country',
+                                related_name='area_codes',
+                                blank=True, null=True,
+                                on_delete=models.CASCADE)
+    prefix = models.IntegerField(choices=PREFIX_CHOICES,
+                                 blank=False, default=0)
+    code = models.CharField(max_length=5, blank=False)
+
+    def __str__(self):
+        if self.country:
+            return '%s: %s %s' % (self.country.name, self.get_prefix_display(), self.code,)
+        return self.code
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(AreaCode, self).save(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        if not self.name:
+            if self.country:
+                self.name = self.country.name
+            self.name = self.code
+        return super(AreaCode, self).clean(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('Area code')
+        ordering = ('name',)
+
+    @property
+    def _history_user(self):
+        return self.modified_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.modified_by = value
+
+
+class PhoneNumberManager(models.Manager):
+    def set_as_primary(self, phone_number, user=None):
+        """
+        Sets an phone number as primary for a particular user.
+        """
+        if isinstance(phone_number, int):
+            phone_number = self.get_queryset().get(pk=phone_number)
+        if isinstance(phone_number, str):
+            phone_number = self.get_queryset().get(phone_number=phone_number)
+        if user is None:
+            user = phone_number.user
+        user.phone_numbers.all().update(is_primary=False)
+        self.get_queryset().filter(pk=phone_number.pk).update(is_primary=True)
+        return phone_number
+
+
+class PhoneNumber(models.Model):
+    """Model to unify all Phone related stuff."""
+    phone_number = models.CharField(max_length=12, blank=False)
+    is_primary = models.BooleanField(default=False)
+    area_code = models.ForeignKey(
+        'accounts.AreaCode',
+        related_name='phone_numbers',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='phone_numbers',
+        on_delete=models.CASCADE,
+        blank=False,
+        null=False
+    )
+    history = HistoricalRecords()
+    modified_by = (
+        models.ForeignKey(settings.AUTH_USER_MODEL,
+                          related_name='%(app_label)s_%(class)s_modified_by',
+                          on_delete=models.SET_NULL, null=True,
+                          blank=True))
+    objects = PhoneNumberManager()
+
+    def __str__(self):
+        return '(%s)%s-%s' % (self.area_code, self.phone_number[:3], self.phone_number[3:])
+
+    def save(self, *args, **kwargs):
+        if self.user.phone_numbers.count() == 0:
+            self.is_primary = True
+        self.full_clean()
+        super(PhoneNumber, self).save(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        self.phone_number = reduce_to_alphanum(self.phone_number)
+        super(PhoneNumber, self).clean(*args, **kwargs)
 
     @property
     def _history_user(self):
@@ -123,7 +271,7 @@ class ModGroup(Group):
 class CustomUserManager(BaseUserManager):
     """Base manager for user model."""
     def create_user(self, username, email, password=None, **extra_fields):
-        """Creates basic user with basic permissions (via ModGroup
+        """Creates basic user with basic permissions (via Group
         assignment)."""
         if not email:
             raise ValueError('Users must have a valid email address')
@@ -141,16 +289,17 @@ class CustomUserManager(BaseUserManager):
         user = self.create_user(username=username,
                                 email=email,
                                 password=password)
-        user.is_admin = True
         user.is_active = True
+        #pylint: disable=W0612
+        try:
+            superusers = Group.objects.get(name='superuser')
+        except Group.DoesNotExist:
+            superusers = Group.objects.create(name='superuser',
+                                              is_supervisor=True,
+                                              is_admin=True)
+        user.groups.add(superusers)
         user.save(using=self._db)
         return user
-
-    def get_mod_group_permissions(self):
-        """
-        Implemented because Django refuses to let extended Group models
-        live.
-        """
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -186,7 +335,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.username
 
     def clean(self, *args, **kwargs):
-        self.slug = slugify(self.username)
+        self.username_slug = slugify(self.username)
         super(User, self).clean(*args, **kwargs)
 
     def save(self, *args, **kwargs):
@@ -204,11 +353,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Return user's username."""
         return self.username
 
-    def has_perm(self, perm, obj=None):
-        return True
+    # def has_perm(self, perm, obj=None):
+    #     if not self.is_admin:
 
-    def has_module_perms(self, app_label):
-        return True
+    #     return True
+
+    # def has_module_perms(self, app_label):
+    #     return True
 
     @property
     def is_staff(self):
@@ -216,8 +367,19 @@ class User(AbstractBaseUser, PermissionsMixin):
         groups = self.groups.all().values_list('name', flat=True)
         supervisor_groups = (
             ModGroup
-            .objects
+            .mod_manager
             .get_supervisor_groups()
+            .values_list('name', flat=True))
+        return bool(set(groups).intersection(set(supervisor_groups)))
+
+    @property
+    def is_admin(self):
+        """Returns true if the user is the admin or superuser groups."""
+        groups = self.groups.all().values_list('name', flat=True)
+        supervisor_groups = (
+            ModGroup
+            .mod_manager
+            .get_admin_groups()
             .values_list('name', flat=True))
         return bool(set(groups).intersection(set(supervisor_groups)))
 
@@ -225,6 +387,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_superuser(self):
         """Returns true if the user is the superuser."""
         return 'superuser' in self.groups.all().values_list('name', flat=True)
+
+    def get_group_permissions(self, obj=None):
+        """
+        Returns a dict with all group permissions, as a flat list under
+        each group's name.
+        e.g. {'admin': ['can_add_user, 'can_delete_user']}
+        """
+        return {group.name: list(group.permissions.all().values_list('codename', flat=True))
+                 for group in self.groups.all()}
 
 
 class NationalId(models.Model):
