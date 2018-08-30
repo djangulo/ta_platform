@@ -76,6 +76,8 @@ INSTALLED_APPS = [
     'applications',
 ]
 
+SITE_ID = 1
+
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
@@ -198,14 +200,10 @@ STATICFILES_DIRS = (
 )
 INTERNAL_IPS = ['127.0.0.1']
 
-APP_SETTINGS = {
-    'applications': {
-        'MIN_DAYS_ALLOWED': 30,
-    },
-    'accounts': {
-        'ENFORCE_MIN_AGE': True,
-    },
-}
+# Application settings
+ENFORCE_MIN_AGE = True
+MINIMUM_AGE_ALLOWED = 18 # ignored if ENFORCE_MIN_AGE is False
+
 
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
 CELERY_ACCEPT_CONTENT = ['json']

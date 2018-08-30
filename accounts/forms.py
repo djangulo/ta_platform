@@ -1,4 +1,5 @@
 """Accounts forms module."""
+from math import floor
 from django import forms
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import password_validation
@@ -23,9 +24,9 @@ from crispy_forms.layout import (
     Div,
     MultiField,
 )
-from accounts.models import NationalId, Profile, User, reduce_to_alphanum
+from accounts.models import AreaCode, PhoneNumber, NationalId, Profile, User, reduce_to_alphanum
 from accounts.tokens import verify_token_generator
-from admin_console.models import CityTown, AreaCode, Address, PhoneNumber
+from admin_console.models import CityTown, Address
 
 EIGHTEEN_YEARS_AGO = (timezone.now() - timezone.timedelta(days=((365*18)+5))
                       ).date()
@@ -154,26 +155,6 @@ class RegistrationForm(forms.ModelForm):
         # if self._meta.model.USERNAME_FIELD in self.fields:
         #     self.fields[self._meta.model.USERNAME_FIELD].widget.attrs.update({'autofocus': True})
 
-
-    def clean_password2(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError(
-                self.error_messages['password_mismatch'],
-                code='password_mismatch',
-            )
-        return password2
-
-    def clean_national_id_number(self):
-        natid = reduce_to_alphanum(
-            self.cleaned_data.get('national_id_number')
-        )
-        if natid:
-            if NationalId.objects.filter(id_number=natid).exists():
-                raise forms.ValidationError(_('This National ID already exists.'))
-        return natid
-
     def _post_clean(self):
         super()._post_clean()
         # Validate the password after self.instance is updated with form data
@@ -203,27 +184,64 @@ class RegistrationForm(forms.ModelForm):
 
         email_message.send()
 
-    def get_inactive_users(self, email):
-        """Given an email, return matching user(s) who should receive a reset.
+    def get_inactive_users(self, username):
+        """Given an username, return matching user(s) who should receive a reset.
 
         This allows subclasses to more easily customize the default policies
         that prevent inactive users and users with unusable passwords from
         resetting their password.
         """
-        active_users = User.objects.filter(**{
-            '%s__iexact' % User.get_email_field_name(): email,
+        inactive_users = User.objects.filter(**{
+            'username__iexact': username,
             'is_active': False,
         })
-        return (u for u in active_users if u.has_usable_password())
+        return (u for u in inactive_users if u.has_usable_password())
 
-    def clean(self, *args, **kwargs):
-        cleaned_data = super(RegistrationForm, self).clean(*args, **kwargs)
-        if settings.APP_SETTINGS['accounts']['ENFORCE_MIN_AGE']:
-            if EIGHTEEN_YEARS_AGO < cleaned_data.get('birth_date'):
-                raise forms.ValidationError('You must be 18 years old to enroll.')
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError(
+                self.error_messages['password_mismatch'],
+                code='password_mismatch',
+            )
+        return password2
+
+    def clean_national_id_number(self):
+        natid = reduce_to_alphanum(
+            self.cleaned_data.get('national_id_number')
+        )
+        if NationalId.objects.filter(id_number=natid).exists():
+            raise forms.ValidationError(
+                _('This National ID already exists.'),
+                code='national_id_exists',
+            )
+        return natid
+
+    def clean_birth_date(self):
+        # cleaned_data = super(RegistrationForm, self).clean()
+        birth_date = self.cleaned_data.get('birth_date')
+        # import pdb; pdb.set_trace()
+        if settings.ENFORCE_MIN_AGE:
+            min_age = (
+                timezone.now() - timezone.timedelta(days=(
+                    365*settings.MINIMUM_AGE_ALLOWED +
+                    floor(settings.MINIMUM_AGE_ALLOWED / 4)
+                ))
+            ).date()
+            if min_age < birth_date:
+                raise forms.ValidationError(
+                    _('You must be %(value)s years old to enroll.'),
+                    code='age_restricted',
+                    params={'value': settings.MINIMUM_AGE_ALLOWED},
+                )
+        return birth_date
+
+
+    # def clean(self, *args, **kwargs):
 
     def save(self, domain_override=None,
-             subject_template_name='accounts/registrationo_subject.txt',
+             subject_template_name='accounts/registration_subject.txt',
              email_template_name='accounts/registration_email.html',
              use_https=False, token_generator=verify_token_generator,
              from_email=None, request=None, html_email_template_name=None,
@@ -232,39 +250,43 @@ class RegistrationForm(forms.ModelForm):
         Generate a one-use only link for resetting password and send it to the
         user.
         """
-        # import pdb; pdb.set_trace()
-        user = super(RegistrationForm, self).save(commit=False)
-        user.set_password(self.cleaned_data["password1"])
-        if commit:
-            user.save()
-        NationalId.objects.create(
-            id_type=self.cleaned_data['national_id_type'],
-            id_number=self.cleaned_data['national_id_number'],
-            user=user,
-            is_verified=False
-        )
-        email = self.cleaned_data["email"]
-        for user in self.get_inactive_users(email):
-            if not domain_override:
-                current_site = get_current_site(request)
-                site_name = current_site.name
-                domain = current_site.domain
-            else:
-                site_name = domain = domain_override
-            context = {
-                'email': email,
-                'domain': domain,
-                'site_name': site_name,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-                'user': user,
-                'token': token_generator.make_token(user),
-                'protocol': 'https' if use_https else 'http',
-                **(extra_email_context or {}),
-            }
-            self.send_mail(
-                subject_template_name, email_template_name, context, from_email,
-                email, html_email_template_name=html_email_template_name,
+        self.full_clean()
+        if self.is_valid():
+            # import pdb; pdb.set_trace()
+            user = super(RegistrationForm, self).save(commit=False)
+            user.set_password(self.cleaned_data["password1"])
+            if commit:
+                user.save()
+            NationalId.objects.create(
+                id_type=self.cleaned_data['national_id_type'],
+                id_number=self.cleaned_data['national_id_number'],
+                user=user,
+                is_verified=False
             )
+            email = self.cleaned_data['email']
+            username = self.cleaned_data['username']
+            for user in self.get_inactive_users(username):
+                if not domain_override:
+                    current_site = get_current_site(request)
+                    site_name = current_site.name
+                    domain = current_site.domain
+                else:
+                    site_name = domain = domain_override
+                context = {
+                    'email': email,
+                    'domain': domain,
+                    'site_name': site_name,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+                    'user': user,
+                    'token': token_generator.make_token(user),
+                    'protocol': 'https' if use_https else 'http',
+                    **(extra_email_context or {}),
+                }
+                self.send_mail(
+                    subject_template_name, email_template_name, context, from_email,
+                    email, html_email_template_name=html_email_template_name,
+                )
+        return None
 
 
 
