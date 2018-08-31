@@ -12,7 +12,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.template import loader
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_bytes
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy, reverse_lazy
 from django.views import generic
 from django.utils.translation import ugettext_lazy as _
 from accounts.forms import (
@@ -22,7 +22,7 @@ from accounts.forms import (
     PasswordSetForm,
     RegistrationForm,
 )
-from accounts.models import User, Profile, NationalId
+from accounts.models import User, Profile, NationalId, EmailAddress
 from accounts.tokens import verify_token_generator
 
 # if settings.BRANDING:
@@ -44,7 +44,6 @@ class ProfileDetailView(generic.DetailView):
 
 class RegistrationView(generic.CreateView):
     form_class = RegistrationForm
-    success_url = reverse_lazy('accounts:register_done')
     token_generator = verify_token_generator
     model = User
 
@@ -55,6 +54,13 @@ class RegistrationView(generic.CreateView):
     from_email = None
     html_email_template_name = None
     title = _('Register')
+
+    # def get(self, request, *args, **kwargs):
+        # if request.user.is_authenticated:
+        #     return HttpResponseRedirect(reverse_lazy('accounts:profile', kwargs={
+        #         'slug': request.user.username_slug
+        #     }))
+        # super(RegistrationView, self).get(request, *args, **kwargs)
 
     def form_valid(self, form):
         opts = {
@@ -107,6 +113,9 @@ class RegistrationVerifyView(generic.TemplateView):
                 )
                 User.objects.filter(id=self.user.id).update(is_verified=True,
                                                             is_active=True)
+                EmailAddress.objects.filter(email=self.user.email).update(
+                    is_verified=True,
+                )
                 return HttpResponseRedirect(redirect_url)
 
         # Display the "Password reset unsuccessful" page.
