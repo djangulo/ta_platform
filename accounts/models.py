@@ -89,6 +89,7 @@ class EmailAddress(models.Model):
     """Email address model."""
     email = models.EmailField(unique=True, blank=False, null=False)
     is_primary = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
