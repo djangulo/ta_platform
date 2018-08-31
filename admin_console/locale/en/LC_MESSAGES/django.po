@@ -1,0 +1,286 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-08-31 17:32-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: admin_console/forms.py:12
+msgid "First names"
+msgstr ""
+
+#: admin_console/forms.py:15
+msgid "Last names"
+msgstr ""
+
+#: admin_console/forms.py:18
+#: admin_console/templates/admin_console/user_list.html:48
+msgid "Email"
+msgstr ""
+
+#: admin_console/forms.py:22
+msgid "Username"
+msgstr ""
+
+#: admin_console/forms.py:71
+msgid "Area code"
+msgstr ""
+
+#: admin_console/forms.py:80
+msgid "Phone number"
+msgstr ""
+
+#: admin_console/forms.py:94
+msgid "User"
+msgstr ""
+
+#: admin_console/forms.py:106
+msgid "Prefix"
+msgstr ""
+
+#: admin_console/forms.py:112
+msgid "Code"
+msgstr ""
+
+#: admin_console/forms.py:119 admin_console/forms.py:182
+msgid "Country"
+msgstr ""
+
+#: admin_console/forms.py:128 admin_console/forms.py:144
+#: admin_console/forms.py:160 admin_console/forms.py:176
+#: admin_console/forms.py:202 admin_console/forms.py:218
+#: admin_console/forms.py:234 admin_console/forms.py:250
+#: admin_console/forms.py:265 admin_console/forms.py:281
+#: admin_console/forms.py:297 admin_console/forms.py:327
+msgid "Display in form"
+msgstr ""
+
+#: admin_console/forms.py:139 admin_console/forms.py:155
+#: admin_console/forms.py:171 admin_console/forms.py:197
+#: admin_console/forms.py:213 admin_console/forms.py:229
+#: admin_console/forms.py:245 admin_console/forms.py:260
+#: admin_console/forms.py:276 admin_console/forms.py:292
+#: admin_console/forms.py:322
+#: admin_console/templates/admin_console/user_list.html:46
+msgid "Name"
+msgstr ""
+
+#: admin_console/forms.py:302 admin_console/forms.py:332
+msgid "Industry"
+msgstr ""
+
+#: admin_console/forms.py:308
+msgid "Institution"
+msgstr ""
+
+#: admin_console/models.py:44
+msgid "Enter a name to rememberthis address by."
+msgstr ""
+
+#: admin_console/models.py:116
+msgid "institution"
+msgstr ""
+
+#: admin_console/models.py:117
+msgid "institutions"
+msgstr ""
+
+#: admin_console/models.py:137
+msgid "shift"
+msgstr ""
+
+#: admin_console/models.py:138
+msgid "shifts"
+msgstr ""
+
+#: admin_console/models.py:144
+msgid "language"
+msgstr ""
+
+#: admin_console/models.py:145
+msgid "languages"
+msgstr ""
+
+#: admin_console/models.py:246
+msgid "city or town"
+msgstr ""
+
+#: admin_console/models.py:253
+msgid "city sector"
+msgstr ""
+
+#: admin_console/models.py:267
+msgid "State, province or region"
+msgstr ""
+
+#: admin_console/models.py:268
+msgid "States, provinces or regions"
+msgstr ""
+
+#: admin_console/models.py:275
+msgid "country"
+msgstr ""
+
+#: admin_console/models.py:276
+msgid "countries"
+msgstr ""
+
+#: admin_console/models.py:283
+msgid "call center"
+msgstr ""
+
+#: admin_console/models.py:284
+msgid "call centers"
+msgstr ""
+
+#: admin_console/models.py:290
+msgid "area of experience"
+msgstr ""
+
+#: admin_console/models.py:291
+msgid "areas of experience"
+msgstr ""
+
+#: admin_console/models.py:297 admin_console/models.py:298
+msgid "application status"
+msgstr ""
+
+#: admin_console/models.py:303
+msgid "declined reason"
+msgstr ""
+
+#: admin_console/models.py:304
+msgid "declined reasons"
+msgstr ""
+
+#: admin_console/templates/admin_console/accounts.html:20
+#: admin_console/templates/admin_console/modgroup_form.html:22
+#: admin_console/templates/admin_console/modgroup_list.html:21
+#: admin_console/templates/admin_console/user_detail.html:20
+#: admin_console/templates/admin_console/user_form.html:22
+#: admin_console/templates/admin_console/user_list.html:21
+msgid "Admin"
+msgstr ""
+
+#: admin_console/templates/admin_console/accounts.html:22
+#: admin_console/templates/admin_console/accounts_table.html:4
+#: admin_console/templates/admin_console/home.html:42
+#: admin_console/templates/admin_console/modgroup_detail.html:22
+#: admin_console/templates/admin_console/modgroup_form.html:24
+#: admin_console/templates/admin_console/modgroup_list.html:23
+#: admin_console/templates/admin_console/user_detail.html:22
+#: admin_console/templates/admin_console/user_form.html:24
+#: admin_console/templates/admin_console/user_list.html:23
+msgid "Accounts"
+msgstr ""
+
+#: admin_console/templates/admin_console/accounts.html:36
+msgid "Accounts administration"
+msgstr ""
+
+#: admin_console/templates/admin_console/accounts.html:37
+#: admin_console/templates/admin_console/home.html:43
+msgid "Manage users, groups and permissions."
+msgstr ""
+
+#: admin_console/templates/admin_console/accounts_table.html:9
+#: admin_console/templates/admin_console/modgroup_form.html:26
+#: admin_console/templates/admin_console/modgroup_list.html:25
+#: admin_console/templates/admin_console/user_list.html:25
+msgid "Groups"
+msgstr ""
+
+#: admin_console/templates/admin_console/accounts_table.html:10
+#: admin_console/templates/admin_console/accounts_table.html:14
+#: admin_console/templates/admin_console/accounts_table.html:18
+#: admin_console/templates/admin_console/modgroup_form.html:33
+#: admin_console/templates/admin_console/user_form.html:33
+msgid "Add"
+msgstr ""
+
+#: admin_console/templates/admin_console/accounts_table.html:13
+#: admin_console/templates/admin_console/user_detail.html:24
+#: admin_console/templates/admin_console/user_form.html:26
+msgid "Users"
+msgstr ""
+
+#: admin_console/templates/admin_console/accounts_table.html:17
+msgid "Permissions"
+msgstr ""
+
+#: admin_console/templates/admin_console/home.html:39
+msgid "Applications"
+msgstr ""
+
+#: admin_console/templates/admin_console/home.html:40
+msgid "Manage your applications and related items."
+msgstr ""
+
+#: admin_console/templates/admin_console/modgroup_detail.html:43
+#: admin_console/templates/admin_console/modgroup_form.html:31
+#: admin_console/templates/admin_console/modgroup_list.html:58
+#: admin_console/templates/admin_console/user_detail.html:45
+#: admin_console/templates/admin_console/user_form.html:31
+#: admin_console/templates/admin_console/user_list.html:60
+msgid "Edit"
+msgstr ""
+
+#: admin_console/templates/admin_console/modgroup_detail.html:46
+#: admin_console/templates/admin_console/user_detail.html:48
+msgid "Delete"
+msgstr ""
+
+#: admin_console/templates/admin_console/modgroup_list.html:40
+msgid ""
+"Groups represent the basics building blocks for permission management within "
+"this application. Each group can have as many permissions as you'd like, and "
+"you can create new and modify them as it best fits your organization. We've "
+"configured some initial settings for you, but you can modify them to your "
+"preference, or create new ones."
+msgstr ""
+
+#: admin_console/templates/admin_console/modgroup_list.html:46
+msgid "Group"
+msgstr ""
+
+#: admin_console/templates/admin_console/modgroup_list.html:47
+msgid "Slug"
+msgstr ""
+
+#: admin_console/templates/admin_console/modgroup_list.html:48
+msgid "Permissions  (hover to display)"
+msgstr ""
+
+#: admin_console/templates/admin_console/user_list.html:40
+msgid ""
+"Groups represent the basics building blocks for permission management within "
+"this application. Each user can have as many permissions as you'd like, and "
+"you can create new and modify them as it best fits your organization. We've "
+"configured some initial settings for you, but you can modify them to your "
+"preference, or create new ones."
+msgstr ""
+
+#: admin_console/templates/admin_console/user_list.html:47
+msgid "National ID"
+msgstr ""
+
+#: admin_console/templates/admin_console/user_list.html:49
+msgid "Status"
+msgstr ""
+
+#: admin_console/templates/admin_console/user_list.html:50
+msgid "Primary phone"
+msgstr ""

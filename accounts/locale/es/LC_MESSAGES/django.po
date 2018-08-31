@@ -1,0 +1,482 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-08-31 17:32-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: accounts/apps.py:7
+msgid "accounts"
+msgstr "cuentas"
+
+#: accounts/forms.py:36 accounts/forms.py:54
+msgid "ID Type"
+msgstr "Tipo de ID"
+
+#: accounts/forms.py:38 accounts/forms.py:56
+msgid "ID Number"
+msgstr "N&#250;mero de ID"
+
+#: accounts/forms.py:44
+msgid "The two password fields didn't match."
+msgstr "Los dos campos de contrase&ntilde;a no son iguales."
+
+#: accounts/forms.py:46
+msgid "First names"
+msgstr "Primer(os) nombre(s)"
+
+#: accounts/forms.py:47
+msgid "Last names"
+msgstr "Apellido(s)"
+
+#: accounts/forms.py:48
+msgid "Email"
+msgstr "Correo electr&oacute;nico"
+
+#: accounts/forms.py:49
+msgid "Username"
+msgstr "Nombre de usuario"
+
+#: accounts/forms.py:50
+msgid "Accept Terms of Service"
+msgstr "Acepto los terminos de servicio"
+
+#: accounts/forms.py:52
+msgid "Birth date"
+msgstr "Fecha de nacimiento"
+
+#: accounts/forms.py:58
+msgid "Password"
+msgstr "Contrase&ntilde;a"
+
+#: accounts/forms.py:64
+msgid "Password confirmation"
+msgstr "Confirmar contrase&ntilde;a"
+
+#: accounts/forms.py:67
+msgid "Enter the same password as before, for verification."
+msgstr ""
+"Ingrese la misma contrase&ntilde;a que antes, para verificaci&oacute;n."
+
+#: accounts/forms.py:96
+msgid "{{ COMPANY_NAME }}: Register"
+msgstr "{{ COMPANY_NAME }}: Registrarse"
+
+#: accounts/forms.py:141
+msgid "I have read and accepted the Terms of Service."
+msgstr "He le&iacute; y acepto los T&eacute;rminos de Servicio."
+
+#: accounts/forms.py:216
+msgid "This National ID already exists."
+msgstr "Este N&#250;mero de Identificaci&oacute;n ya existe."
+
+#: accounts/forms.py:234
+#, python-format
+msgid "You must be %(value)s years old to enroll."
+msgstr ""
+"Usted debe de tener al menos %(value)s a&ntilde;os de edad para registrarse."
+
+#: accounts/forms.py:313
+msgid ""
+"\n"
+"                        <p><a href=\"{% url 'accounts:password_reset' "
+"%}\">Forgot your password?</a></p>\n"
+"                    "
+msgstr ""
+"\n"
+"                        <p><a href=\"{% url 'accounts:password_reset' "
+"%}\">&iquest;Olvido su contrase&ntilde;a?</a></p>\n"
+"                    "
+
+#: accounts/forms.py:354 accounts/forms.py:387
+msgid "Submit"
+msgstr "Enviar"
+
+#: accounts/forms.py:355
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: accounts/forms.py:367
+msgid "Email or username"
+msgstr "Correo electr&oacute;nico o usuario"
+
+#: accounts/forms.py:484
+msgid "Change my password"
+msgstr "Cambiar mi contrase&ntilde;a"
+
+#: accounts/models.py:205
+msgid "Area code"
+msgstr "C&oacute;digo de area"
+
+#: accounts/models.py:321
+msgid "Active"
+msgstr "Activo"
+
+#: accounts/models.py:322
+msgid "Termed"
+msgstr "Terminado"
+
+#: accounts/models.py:323
+msgid "Never worked for us"
+msgstr "Nunca trabaj&oacute; con nosotros"
+
+#: accounts/models.py:324
+msgid "Non-rehirable"
+msgstr "No recontratable"
+
+#: accounts/models.py:420
+msgid "Cedula"
+msgstr "C&eacute;dula"
+
+#: accounts/models.py:421
+msgid "Passport"
+msgstr "Pasaporte"
+
+#: accounts/models.py:422
+msgid "Social Security Number"
+msgstr "N&#250;mero de Seguridad Social"
+
+#: accounts/models.py:427
+msgid "ID Type: Cedula, SSN, Passport"
+msgstr "Tipo de ID: C&eacute;dula, SSN, Pasaporte"
+
+#: accounts/models.py:478
+msgid "Male"
+msgstr "Masculino"
+
+#: accounts/models.py:479
+msgid "Female"
+msgstr "Femenino"
+
+#: accounts/models.py:498
+msgid "profile"
+msgstr "perfil"
+
+#: accounts/models.py:499
+msgid "profiles"
+msgstr "perfiles"
+
+#: accounts/templates/accounts/login.html:18
+#: accounts/templates/accounts/logout.html:20
+#: accounts/templates/accounts/password_change_complete.html:17
+#: accounts/templates/accounts/password_change_form.html:18
+#: accounts/templates/accounts/password_reset_complete.html:17
+#: accounts/templates/accounts/password_reset_confirm.html:18
+#: accounts/templates/accounts/password_reset_done.html:17
+#: accounts/templates/accounts/password_reset_done.html:33
+#: accounts/templates/accounts/password_reset_form.html:18
+#: accounts/templates/accounts/registration_complete.html:17
+#: accounts/templates/accounts/registration_done.html:17
+#: accounts/templates/accounts/registration_done.html:27
+#: accounts/templates/accounts/registration_form.html:21
+#: accounts/templates/accounts/registration_verification_sent.html:17
+#: accounts/templates/accounts/registration_verification_sent.html:27
+msgid "Home"
+msgstr "Inicio"
+
+#: accounts/templates/accounts/login.html:20
+#: accounts/templates/accounts/login.html:30
+#: accounts/templates/accounts/logout.html:22
+#: accounts/templates/accounts/password_reset_done.html:34
+#: accounts/templates/accounts/registration_done.html:28
+#: accounts/templates/accounts/registration_verification_sent.html:28
+msgid "Login"
+msgstr "Iniciar sesi&oacute;n"
+
+#: accounts/templates/accounts/password_change_complete.html:9
+msgid "Password change successful"
+msgstr "Cambio de contrase&ntilde;a exitoso"
+
+#: accounts/templates/accounts/password_change_complete.html:22
+#: accounts/templates/accounts/password_reset_complete.html:22
+#: accounts/templates/accounts/password_reset_confirm.html:23
+#: accounts/templates/accounts/password_reset_done.html:22
+#: accounts/templates/accounts/password_reset_form.html:23
+msgid "Account"
+msgstr ""
+
+#: accounts/templates/accounts/password_change_complete.html:25
+#: accounts/templates/accounts/password_reset_complete.html:25
+#: accounts/templates/accounts/password_reset_done.html:25
+#: accounts/templates/accounts/password_reset_done.html:30
+#: accounts/templates/accounts/password_reset_form.html:10
+#: accounts/templates/accounts/password_reset_form.html:26
+#: accounts/templates/accounts/password_reset_form.html:36
+#: accounts/templates/accounts/registration_verification_sent.html:19
+#: accounts/templates/accounts/registration_verification_sent.html:24
+msgid "Password reset"
+msgstr "Reiniciar contrase&ntilde;a"
+
+#: accounts/templates/accounts/password_change_complete.html:30
+#: accounts/templates/accounts/password_reset_complete.html:30
+msgid "Password reset complete"
+msgstr "Reinicio de contrase&ntilde;a completo"
+
+#: accounts/templates/accounts/password_change_complete.html:31
+msgid "You have succesfully changed your password."
+msgstr "Usted ha cambiado su contrase&ntilde;a con &eacute;xito."
+
+#: accounts/templates/accounts/password_change_form.html:20
+msgid "Accounts"
+msgstr "Cuentas"
+
+#: accounts/templates/accounts/password_change_form.html:22
+#: accounts/templates/accounts/password_reset_confirm.html:37
+msgid "Change password"
+msgstr "Cambiar contrase&ntilde;a"
+
+#: accounts/templates/accounts/password_change_form.html:32
+msgid "Password change"
+msgstr "Cambiar contrase&ntilde;a"
+
+#: accounts/templates/accounts/password_reset_complete.html:9
+#: accounts/templates/accounts/password_reset_done.html:9
+#: accounts/templates/accounts/registration_verification_sent.html:9
+msgid "Password reset successful"
+msgstr "Reinicio de contrase&ntilde;a exitoso"
+
+#: accounts/templates/accounts/password_reset_complete.html:31
+msgid "Your password has been reset. You may go ahead and"
+msgstr "Su contrase&ntilde;a ha sido reiniciada. Usted puede"
+
+#: accounts/templates/accounts/password_reset_complete.html:31
+#, fuzzy
+#| msgid "Login"
+msgid "login"
+msgstr "Iniciar sesi&oacute;n"
+
+#: accounts/templates/accounts/password_reset_confirm.html:10
+msgid "Set new password"
+msgstr "Ingresar nueva contrase&ntilde;a"
+
+#: accounts/templates/accounts/password_reset_confirm.html:26
+#, fuzzy
+#| msgid "Set new password"
+msgid "Reset password"
+msgstr "Ingresar nueva contrase&ntilde;a"
+
+#: accounts/templates/accounts/password_reset_confirm.html:44
+msgid "We're sorry..."
+msgstr "Lo sentimos..."
+
+#: accounts/templates/accounts/password_reset_confirm.html:46
+#, fuzzy, python-format
+#| msgid "...but this password reset link has expired. Please "
+msgid ""
+" <p>...but this password reset link has expired. Please <a href="
+"\"%(pass_reset_url)s\">request a new one</a></p>"
+msgstr ""
+"...pero este enlace de reinicio de contrase&ntilde;a ha expirado. Por favor "
+
+#: accounts/templates/accounts/password_reset_done.html:31
+msgid ""
+"We've emailed you instructions for resetting your password to the e-mail "
+"addres you submitted."
+msgstr ""
+"Le hemos enviado instrucciones sobre como reiniciar su contrase&ntilde;a al "
+"correo electr&oacute;nico que usted someti&oacute;."
+
+#: accounts/templates/accounts/password_reset_done.html:32
+#: accounts/templates/accounts/registration_verification_sent.html:26
+msgid "You should be receiving it shortly."
+msgstr "Lo estar&aacute; recibiendo en breve."
+
+#: accounts/templates/accounts/password_reset_email.html:4
+#, python-format
+msgid ""
+"\n"
+"You're receiving this e-mail because you requested \n"
+"a password reset for your user account at %(_site_name)s.\n"
+msgstr ""
+"\n"
+"Usted esta reciviendo este correo electronico debido a que usted "
+"solicit&oacute; \n"
+"un reinicio de contrase&ntilde;a para su cuenta de usuario de "
+"%(_site_name)s.\n"
+
+#: accounts/templates/accounts/password_reset_email.html:9
+msgid "Please go to the following page and choose a new password:"
+msgstr ""
+"Por favor acceda a la siguiente p&aacute;gina y eliga una nueva "
+"contrase&ntilde;a:"
+
+#: accounts/templates/accounts/password_reset_email.html:15
+#: accounts/templates/accounts/registration_email.html:14
+msgid "Your username, in case you've forgotten:"
+msgstr "Su nombre de usuario, en caso de haberlo olvidado"
+
+#: accounts/templates/accounts/password_reset_email.html:17
+#: accounts/templates/accounts/registration_email.html:16
+msgid "Thank you for using our site!"
+msgstr "&iexcl;Gracias por utilizar nuestra p&aacute;gina!"
+
+#: accounts/templates/accounts/password_reset_email.html:19
+#: accounts/templates/accounts/registration_email.html:18
+#, python-format
+msgid "The %(_site_name)s team"
+msgstr "El equipo de %(_site_name)s"
+
+#: accounts/templates/accounts/password_reset_form.html:38
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email you "
+"instructions for setting a new one."
+msgstr ""
+"&iquest;Olvido su contrase&ntilde;a? Ingrese su correo electr&oacute;nico en "
+"el campo debajo, y le enviaremos instrucciones para configurar uno nuevo."
+
+#: accounts/templates/accounts/registration_complete.html:9
+msgid "{{ user.username }} verified"
+msgstr "{{ user.username }} verificado"
+
+#: accounts/templates/accounts/registration_complete.html:19
+#: accounts/templates/accounts/registration_done.html:19
+#: accounts/templates/accounts/registration_form.html:23
+msgid "Sign up"
+msgstr "Registrarse"
+
+#: accounts/templates/accounts/registration_complete.html:24
+#: accounts/views.py:91
+msgid "Registration complete"
+msgstr "Registro completo"
+
+#: accounts/templates/accounts/registration_complete.html:25
+msgid "You've now completed the registration process."
+msgstr "Usted ha completado el proceso de registro."
+
+#: accounts/templates/accounts/registration_complete.html:29
+#, python-format
+msgid ""
+"\n"
+"  <p>You can now <a class=\"h5\" href=\"%(loginurl)s\">Login</a> or <a class="
+"\"h5\" href=\"%(referurl)s\">start referring!</a> </p>\n"
+"  "
+msgstr ""
+"\n"
+"  <p>Usted puede ahora <a class=\"h5\" href=\"%(loginurl)s\">Ingresar</a> "
+"&oacute;, <a class=\"h5\" href=\"%(referurl)s\">&iexcl;comenzar a referir!</"
+"a> </p>\n"
+"  "
+
+#: accounts/templates/accounts/registration_done.html:9
+msgid "Sign up successful"
+msgstr "Registro exitoso"
+
+#: accounts/templates/accounts/registration_done.html:24
+msgid "Register complete"
+msgstr "Registro completo"
+
+#: accounts/templates/accounts/registration_done.html:25
+msgid "We've sent you an email to verify your email address."
+msgstr ""
+"Le hemos enviado un correo electr&oacute;nico para verificar su "
+"direcci&oacute;n."
+
+#: accounts/templates/accounts/registration_done.html:26
+msgid "You should be receiving our email shortly."
+msgstr "Usted deber&aacute; de recibir nuestro correo en breve."
+
+#: accounts/templates/accounts/registration_email.html:4
+#, python-format
+msgid ""
+"\n"
+"Thank you for registering with %(_site_name)s.\n"
+msgstr ""
+"\n"
+"Gracias por registrarse con %(_site_name)s.\n"
+
+#: accounts/templates/accounts/registration_email.html:8
+msgid "Please follow the link below to complete your registration process."
+msgstr ""
+"Por favor acceda el enlace debajo para completar su proceso de registro."
+
+#: accounts/templates/accounts/registration_form.html:13 accounts/views.py:56
+msgid "Register"
+msgstr "Registrarse"
+
+#: accounts/templates/accounts/registration_verification_sent.html:25
+msgid ""
+"We've emailed you instructions for to complete your registration to the "
+"email address you've submitted."
+msgstr ""
+"Le hemos enviado instrucciones para completar su proceso de registro al "
+"correo electr&oacute;nico que usted someti&oacute;."
+
+#: accounts/urls.py:8
+msgid "login/"
+msgstr "iniciar-sesion/"
+
+#: accounts/urls.py:9
+msgid "logout/"
+msgstr "cerrar-sesion/"
+
+#: accounts/urls.py:10
+msgid "register/"
+msgstr "registrarse/"
+
+#: accounts/urls.py:11
+msgid "register/done/"
+msgstr "registrarse/hecho/"
+
+#: accounts/urls.py:13
+msgid "register/verify/<uidb64>/<token>/"
+msgstr "registrarse/verificar/<uidb64>/<token>/"
+
+#: accounts/urls.py:15
+msgid "register/complete/"
+msgstr "registrarse/completo/"
+
+#: accounts/urls.py:17
+msgid "password/change/"
+msgstr "contrasena/cambiar/"
+
+#: accounts/urls.py:18
+msgid "password/change/done/"
+msgstr "contrasena/cambiar/hecho/"
+
+#: accounts/urls.py:19
+msgid "password/reset/"
+msgstr "contrasena/reiniciar/"
+
+#: accounts/urls.py:20
+#, fuzzy
+#| msgid "Password reset"
+msgid "password/reset/done/"
+msgstr "contrasena/reiniciar/hecho"
+
+#: accounts/urls.py:21
+msgid "password/reset/confirm/<uidb64>/<token>/"
+msgstr "contrasena/reiniciar/<uidb64>/<token>/"
+
+#: accounts/urls.py:22
+#, fuzzy
+#| msgid "Password reset complete"
+msgid "password/reset/complete/"
+msgstr "constrasena/reiniciar/completo/"
+
+#: accounts/urls.py:23
+msgid "profile/<str:slug>/"
+msgstr "perfil/<str:slug>/"
+
+#: accounts/views.py:32
+msgid "You have successfully logged out."
+msgstr "Usted ha salido exitosamente."
+
+#: accounts/views.py:140
+msgid "Verification unsuccessful"
+msgstr "Verificaci&oacute;n fracas&oacute;"
+
+#~ msgid "request a new one"
+#~ msgstr "solicite uno nuevo"

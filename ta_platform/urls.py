@@ -17,30 +17,32 @@ from django.conf import settings
 from django.contrib import admin
 from django.conf.urls.i18n import i18n_patterns
 from django.urls import path, include
+from django.utils.translation import gettext_lazy as _
 from django.conf.urls.static import static
 from django.views.i18n import JavaScriptCatalog
 
-from ta_platform.views import HomeView
+from common.views import HomeView
 
 admin.site.site_header = "{} administration".format(settings.BRAND_DICT['COMPANY_NAME'])
 
 urlpatterns = [
-    path('admin-contrib/', admin.site.urls),
-    path('', HomeView.as_view(), name='home'),
-    path('apply/', include('applications.urls', namespace='applications')),
-    path('accounts/', include('accounts.urls', namespace='accounts')),
-    path('admin-console/', include('admin_console.urls', namespace='admin_console')),
     # path('its/', include('issue_tracker.urls', namespace='its')),
-    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
+    path('i18n/', include('django.conf.urls.i18n')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# urlpatterns += i18n_patterns(
-#     path('jsi18n/', JavaScriptCatalog.as_view(domain='djangojs', packages=[
-#         'applications',
-#         'admin',
-#         'accounts',
-#         ]), name='javascript-catalog'),
-# )
+urlpatterns += i18n_patterns(
+    path('jsi18n/', JavaScriptCatalog.as_view(domain='djangojs', packages=[
+        'applications',
+        'admin',
+        'accounts',
+        ]), name='javascript-catalog'),
+    path('admin-contrib/', admin.site.urls),
+    path('', HomeView.as_view(), name='home'),
+    path(_('apply/'), include('applications.urls', namespace='applications')),
+    path(_('accounts/'), include('accounts.urls', namespace='accounts')),
+    path(_('admin-console/'), include('admin_console.urls', namespace='admin_console')),
+    prefix_default_language=True
+)
 
 
 if settings.DEBUG:

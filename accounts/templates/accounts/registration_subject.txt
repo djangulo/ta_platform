@@ -1,1 +1,1 @@
-{{ site_name }}: Verification required for {{ user.email }}
+{{ site_name }}: {% trans "Verification required for:" {{ user.email }}

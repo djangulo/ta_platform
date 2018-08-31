@@ -1,8 +1,8 @@
 {% load i18n %}
 {% autoescape off %}
 
-{% blocktrans %}
-Thank you for registering with {{ site_name }}.
+{% blocktrans with _site_name=site_name %}
+Thank you for registering with {{ _site_name }}.
 {% endblocktrans %}
 
 {% trans "Please follow the link below to complete your registration process." %}
@@ -15,6 +15,6 @@ Thank you for registering with {{ site_name }}.
 
 {% trans "Thank you for using our site!" %}
 
-{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
+{% blocktrans with _site_name=site_name %}The {{ _site_name }} team{% endblocktrans %}
 
 {% endautoescape %}

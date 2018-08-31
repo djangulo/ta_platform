@@ -1,0 +1,95 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-08-31 17:32-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: applications/models.py:40
+msgid "shift"
+msgstr ""
+
+#: applications/models.py:41
+msgid "shifts"
+msgstr ""
+
+#: applications/models.py:46
+msgid "language"
+msgstr ""
+
+#: applications/models.py:47
+msgid "languages"
+msgstr ""
+
+#: applications/models.py:51
+msgid "city or town"
+msgstr ""
+
+#: applications/models.py:56
+msgid "call center"
+msgstr ""
+
+#: applications/models.py:57
+msgid "call centers"
+msgstr ""
+
+#: applications/models.py:61
+msgid "area of experience"
+msgstr ""
+
+#: applications/models.py:62
+msgid "areas of experience"
+msgstr ""
+
+#: applications/models.py:69
+msgid "Cedula"
+msgstr ""
+
+#: applications/models.py:70
+msgid "Passport"
+msgstr ""
+
+#: applications/models.py:71
+msgid "Social Security Number"
+msgstr ""
+
+#: applications/models.py:77
+msgid "Male"
+msgstr ""
+
+#: applications/models.py:78
+msgid "Female"
+msgstr ""
+
+#: applications/models.py:79
+msgid "Rather not say"
+msgstr ""
+
+#: applications/models.py:141
+msgid "application"
+msgstr ""
+
+#: applications/models.py:142
+msgid "applications"
+msgstr ""
+
+#: applications/models.py:144
+msgid "can change status"
+msgstr ""
+
+#: applications/models.py:145
+msgid "can view status"
+msgstr ""
