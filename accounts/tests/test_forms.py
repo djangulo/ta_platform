@@ -2,9 +2,16 @@ from math import floor
 from django import forms
 from django.utils import timezone
 from django.test import TestCase, override_settings
+from django.urls import reverse
 from unittest.mock import patch
-from accounts.forms import RegistrationForm
 from accounts.models import User, EmailAddress, PhoneNumber, NationalId
+from accounts.forms import (
+    LoginForm,
+    PasswordChangeForm,
+    PasswordResetForm,
+    PasswordSetForm,
+    RegistrationForm,
+)
 
 FIRST_NAMES = 'Alice'
 LAST_NAMES = 'Van Der Laand'
@@ -50,7 +57,14 @@ class RegistrationFormTest(TestCase):
     def test_valid_form_sends_email(self, mock_send_mail):
         form = RegistrationForm(data=TEST_DATA)
         form.save()
-        self.assertEqual(mock_send_mail.called, True)
+        self.assertTrue(mock_send_mail.called, True)
+
+    def test_all_fields_are_required(self):
+        form = RegistrationForm(data={'wrong': 'data'})
+        form.save()
+        self.assertTrue(all([
+            form.has_error(f, 'required') for f in form.fields
+        ]))
 
     def test_valid_form_creates_user(self):
         form = RegistrationForm(data=TEST_DATA)
@@ -90,7 +104,9 @@ class RegistrationFormTest(TestCase):
                                         'age_restricted'))
 
     def test_form_fails_on_national_id_duplicate(self):
-        user = User.objects.create(username=USERNAME, password=PASSWORD)
+        user = User.objects.create(username=USERNAME,
+                                   email=EMAIL,
+                                   password=PASSWORD)
         natid = NationalId.objects.create(id_number=ID_NUMBER, user=user)
         form = RegistrationForm(data=TEST_DATA)
         form.save()
@@ -103,3 +119,123 @@ class RegistrationFormTest(TestCase):
         form = RegistrationForm(data=INVALID_DATA)
         form.save()
         self.assertTrue(form.has_error('password2', 'password_mismatch'))
+
+    def test_form_helper_exists(self):
+        form = RegistrationForm()
+        form.save()
+        self.assertIsNotNone(form.helper)
+
+    def test_form_helper_method_is_post(self):
+        form = RegistrationForm()
+        form.save()
+        self.assertEqual(form.helper.form_method, 'post')
+
+    def test_form_helper_action_points_to_correct_url(self):
+        url = reverse('accounts:register')
+        form = RegistrationForm()
+        form.save()
+        self.assertEqual(form.helper.form_action, url)
+
+
+class LoginFormTest(TestCase):
+    def test_all_fields_are_required(self):
+        form = LoginForm(data={'wrong': 'data'})
+        form.is_valid()
+        self.assertTrue(all([
+            form.has_error(f, 'required') for f in form.fields
+        ]))
+
+    def test_form_helper_exists(self):
+        form = LoginForm()
+        self.assertIsNotNone(form.helper)
+
+    def test_form_helper_method_is_post(self):
+        form = LoginForm()
+        self.assertEqual(form.helper.form_method, 'post')
+
+    def test_form_helper_action_points_to_correct_url(self):
+        url = reverse('accounts:login')
+        form = LoginForm()
+        self.assertEqual(form.helper.form_action, url)
+
+
+class PasswordChangeFormTest(TestCase):
+
+    @classmethod
+    def setUpTestData(self):
+        self.user = User.objects.create(username=USERNAME,
+                                        password=PASSWORD,
+                                        email=EMAIL)
+
+    def test_all_fields_are_required(self):
+        form = PasswordChangeForm(self.user, data={'wrong': 'data'})
+        form.is_valid()
+        self.assertTrue(all([
+            form.has_error(f, 'required') for f in form.fields
+        ]))
+
+    def test_form_helper_exists(self):
+        form = PasswordChangeForm(self.user)
+        self.assertIsNotNone(form.helper)
+
+    def test_form_helper_method_is_post(self):
+        form = PasswordChangeForm(self.user)
+        self.assertEqual(form.helper.form_method, 'post')
+
+    def test_form_helper_action_points_to_correct_url(self):
+        url = reverse('accounts:password_change')
+        form = PasswordChangeForm(self.user)
+        self.assertEqual(form.helper.form_action, url)
+
+
+class PasswordResetFormTest(TestCase):
+    
+    @classmethod
+    def setUpTestData(self):
+        self.user = User.objects.create(username=USERNAME,
+                                        password=PASSWORD,
+                                        email=EMAIL,
+                                        is_active=True,
+                                        is_verified=True)
+
+    def test_get_active_users_works_with_username(self):
+        form = PasswordResetForm()
+        self.assertIn(self.user, form.get_active_users(USERNAME))
+
+    def test_get_active_users_works_with_email(self):
+        form = PasswordResetForm()
+        self.assertIn(self.user, form.get_active_users(EMAIL))
+
+    @patch('accounts.forms.PasswordResetForm.send_mail')
+    def test_save_on_empty_form_does_nothing(self, mock_send_mail):
+        form = PasswordResetForm()
+        form.save()
+        self.assertEqual(mock_send_mail.called, False)
+
+    @patch('accounts.forms.PasswordResetForm.send_mail')
+    def test_valid_form_sends_email_with_email(self, mock_send_mail):
+        form = PasswordResetForm(data={'email_or_username': EMAIL})
+        form.save()
+        self.assertTrue(mock_send_mail.called, True)
+
+    @patch('accounts.forms.PasswordResetForm.send_mail')
+    def test_valid_form_sends_email_with_username(self, mock_send_mail):
+        form = PasswordResetForm(data={'email_or_username': USERNAME})
+        form.save()
+        self.assertTrue(mock_send_mail.called, True)
+
+    def test_form_helper_exists(self):
+        form = PasswordResetForm()
+        form.save()
+        self.assertIsNotNone(form.helper)
+
+    def test_form_helper_method_is_post(self):
+        form = PasswordResetForm()
+        form.save()
+        self.assertEqual(form.helper.form_method, 'post')
+
+    def test_form_helper_action_points_to_correct_url(self):
+        url = reverse('accounts:password_reset')
+        form = PasswordResetForm()
+        form.save()
+        self.assertEqual(form.helper.form_action, url)

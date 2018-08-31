@@ -1,6 +1,7 @@
 """Accounts forms module."""
 from math import floor
 from django import forms
+from django.db.models import Q
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import password_validation
 from django.contrib.sites.shortcuts import get_current_site
@@ -19,13 +20,14 @@ from crispy_forms.layout import (
     Field,
     Fieldset,
     HTML,
+    Button,
     Layout,
     Submit,
     Div,
     MultiField,
 )
 from accounts.models import AreaCode, PhoneNumber, NationalId, Profile, User, reduce_to_alphanum
-from accounts.tokens import verify_token_generator
+from accounts.tokens import verify_token_generator, reset_token_generator
 from admin_console.models import CityTown, Address
 
 EIGHTEEN_YEARS_AGO = (timezone.now() - timezone.timedelta(days=((365*18)+5))
@@ -289,119 +291,41 @@ class RegistrationForm(forms.ModelForm):
         return None
 
 
-
-# class AdressForm(forms.ModelForm):
-#     adress_line_one = forms.CharField(label=_('Address line one'),
-#                                       max_length=150,
-#                                       required=True,
-#                                       widget=forms.TextInput(attrs={
-#                                           'class': 'form-control',
-#                                       }))
-#     adress_line_two = forms.CharField(label=_('Address line two'),
-#                                       max_length=150,
-#                                       required=True,
-#                                       widget=forms.TextInput(attrs={
-#                                           'class': 'form-control',
-#                                       }))
-#     body = forms.CharField(label=_('Area code'),
-#                                 max_length=3,
-#                                 required=True,
-#                                 widget=forms.TextInput(attrs={
-#                                     'class': 'form-control',
-#                                     'placeholder': '809',
-#                                 }))
-#     class Meta:
-#         model = Address
-#         fields = ('area_code', 'body',)
-
-
-# class RegistrationForm(forms.ModelForm):
-#     error_messages = {
-#         'password_mismatch': _("The two password fields didn't match."),
-#     }
-#     first_names = forms.CharField(label=_('First names'), required=True,
-#                                   widget=forms.TextInput(attrs={
-#                                       'class': 'form-control'}))
-#     last_names = forms.CharField(label=_('Last names'), required=True,
-#                                  widget=forms.TextInput(attrs={
-#                                      'class': 'form-control'}))
-#     natid_type = forms.ChoiceField(choices=NationalId.ID_TYPE_CHOICES,
-#                                          widget=forms.Select(attrs={
-#                                              'class': 'form-control dropdown'}))
-#     natid_number = forms.CharField(required=True,
-#                                          widget=forms.TextInput(attrs={
-#                                              'placeholder': _('Enter your national ID here'),
-#                                              'class': 'form-control',
-#                                          }))
-#     email = forms.EmailField(required=True,
-#                              widget=forms.EmailInput(attrs={
-#                                  'class': 'form-control',
-#                              }))
-#     username = forms.CharField(required=True,
-#                                widget=forms.TextInput(attrs={
-#                                    'class': 'form-control',
-#                                }))
-#     accepted_eula = forms.BooleanField(required=True,
-#                                        widget=forms.CheckboxInput(attrs={
-#                                            'class': 'form-check-input',
-#                                        }))
-#     password1 = forms.CharField(
-#         label=_("Password"),
-#         strip=False,
-#         widget=forms.PasswordInput,
-#         help_text=password_validation.password_validators_help_text_html(),
-#     )
-#     password2 = forms.CharField(
-#         label=_("Password confirmation"),
-#         widget=forms.PasswordInput,
-#         strip=False,
-#         help_text=_("Enter the same password as before, for verification."),
-#     )
-#     class Meta:
-#         model = User
-#         fields = ('email', 'username', 'accepted_eula',)
-
-#     def __init__(self, *args, **kwargs):
-#         super(RegistrationForm, self).__init__(*args, **kwargs)
-#         if self._meta.model.USERNAME_FIELD in self.fields:
-#             self.fields[self._meta.model.USERNAME_FIELD].widget.attrs.update({'autofocus': True})
-
-
-#     def clean_password2(self):
-#         password1 = self.cleaned_data.get("password1")
-#         password2 = self.cleaned_data.get("password2")
-#         if password1 and password2 and password1 != password2:
-#             raise forms.ValidationError(
-#                 self.error_messages['password_mismatch'],
-#                 code='password_mismatch',
-#             )
-#         return password2
-
-#     def _post_clean(self):
-#         super()._post_clean()
-#         # Validate the password after self.instance is updated with form data
-#         # by super().
-#         password = self.cleaned_data.get('password2')
-#         if password:
-#             try:
-#                 password_validation.validate_password(password, self.instance)
-#             except forms.ValidationError as error:
-#                 self.add_error('password2', error)
-
-#     def save(self, commit=True):
-#         user = super().save(commit=False)
-#         user.set_password(self.cleaned_data["password1"])
-#         if commit:
-#             user.save()
-#         return user
-
 class LoginForm(auth_forms.AuthenticationForm):
     """This class merely modifies the widgets in the Django's
     AuthenticationForm"""
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
-        self.fields['username'].widget = forms.EmailInput(attrs={'class': 'form-control'})
-        self.fields['password'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+        # pylint: disable=E1101
+        self.fields['username'].widget.attrs.update({'autofocus': True})
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-login-form'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse('accounts:login')
+        self.helper.html5_required = False
+        self.helper.form_tag = True
+        self.helper.layout = Layout(
+            Fieldset(
+                '',
+                Div(
+                    Field('username', id='username',
+                          wrapper_class='col-sm-12 mb-3'),
+                    Field('password', id='last-names',
+                          wrapper_class='col-sm-12 mb-3'),
+                    HTML(_("""
+                        <p><a href="{% url 'accounts:password_reset' %}">Forgot your password?</a></p>
+                    """)),
+                    css_class='form-row'
+                ),
+                Div(
+                    ButtonHolder(
+                        Submit('submit', 'Login', css_class='btn btn-primary col-sm-12'),
+                        css_class='col-sm-12'
+                    ),
+                    css_class='form-row'
+                ),
+            ),
+        )
 
 
 class PasswordChangeForm(auth_forms.PasswordChangeForm):
@@ -409,23 +333,160 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
     PasswordChangeForm"""
     def __init__(self, *args, **kwargs):
         super(PasswordChangeForm, self).__init__(*args, **kwargs)
-        self.fields['old_password'].widget = forms.PasswordInput(attrs={'class': 'form-control', 'autofocus': True})
-        self.fields['new_password1'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
-        self.fields['new_password2'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-password-change-form'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse('accounts:password_change')
+        self.helper.html5_required = False
+        self.helper.form_tag = True
+        self.helper.layout = Layout(
+            Fieldset(
+                '',
+                Div(
+                    Field('old_password', id='old-password',
+                          wrapper_class='col-sm-12 mb-3'),
+                    Field('new_password1', id='new-password',
+                          wrapper_class='col-sm-12 mb-3'),
+                    Field('new_password2', id='new-password-confirm',
+                          wrapper_class='col-sm-12 mb-3'),                          
+                    css_class='form-row'
+                ),
+                Div(
+                    ButtonHolder(
+                        Submit('submit', _('Submit'), css_class='btn btn-primary col-sm-6'),
+                        Button('cancel', _('Cancel'), css_class='btn btn-primary col-sm-6'),
+                        css_class='col-sm-12'
+                    ),
+                    css_class='form-row'
+                ),
+            ),
+        )
 
 
-class PasswordResetForm(auth_forms.PasswordResetForm):
-    """This class merely modifies the widgets in the Django's
-    PasswordChangeForm"""
+
+class PasswordResetForm(forms.Form):
+    """Own implementation of django's PasswordResetForm."""
+    email_or_username = forms.CharField(label=_('Email or username'),
+                                         max_length=254)
     def __init__(self, *args, **kwargs):
         super(PasswordResetForm, self).__init__(*args, **kwargs)
-        self.fields['email'].widget = forms.EmailInput(attrs={'class': 'form-control', 'autofocus': True})
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-password-reset-form'
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse('accounts:password_reset')
+        self.helper.html5_required = False
+        self.helper.form_tag = True
+        self.helper.layout = Layout(
+            Fieldset(
+                '',
+                Div(
+                    Field('email_or_username', id='email',
+                          wrapper_class='col-sm-12 mb-3'),
+                    css_class='form-row'
+                ),
+                Div(
+                    ButtonHolder(
+                        Submit('submit', _('Submit'), css_class='btn btn-primary col-sm-12'),
+                        css_class='col-sm-12'
+                    ),
+                    css_class='form-row'
+                ),
+            ),
+        )
+    def send_mail(self, subject_template_name, email_template_name,
+                  context, from_email, to_email, html_email_template_name=None):
+        """
+        Send a django.core.mail.EmailMultiAlternatives to `to_email`.
+        """
+        subject = loader.render_to_string(subject_template_name, context)
+        # Email subject *must not* contain newlines
+        subject = ''.join(subject.splitlines())
+        body = loader.render_to_string(email_template_name, context)
+
+        email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
+        if html_email_template_name is not None:
+            html_email = loader.render_to_string(html_email_template_name, context)
+            email_message.attach_alternative(html_email, 'text/html')
+
+        email_message.send()
+
+    def get_active_users(self, email_or_username):
+        """Given an email or username, return matching user(s) who should
+        receive a reset.
+        """
+        active_users = User.objects.filter(
+            Q(username=email_or_username) |
+            Q(email=email_or_username),
+            Q(is_active=True)
+        )
+        return [u for u in active_users if u.has_usable_password()]
+
+    def save(self, domain_override=None,
+             subject_template_name='registration/password_reset_subject.txt',
+             email_template_name='registration/password_reset_email.html',
+             use_https=False, token_generator=reset_token_generator,
+             from_email=None, request=None, html_email_template_name=None,
+             extra_email_context=None):
+        """
+        Generate a one-use only link for resetting password and send it to the
+        user.
+        """
+        self.full_clean()
+        if self.is_valid():
+            email_or_username = self.cleaned_data["email_or_username"]
+            for user in self.get_active_users(email_or_username):
+                if not domain_override:
+                    current_site = get_current_site(request)
+                    site_name = current_site.name
+                    domain = current_site.domain
+                else:
+                    site_name = domain = domain_override
+                context = {
+                    'email': user.email,
+                    'domain': domain,
+                    'site_name': site_name,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+                    'user': user,
+                    'token': token_generator.make_token(user),
+                    'protocol': 'https' if use_https else 'http',
+                    **(extra_email_context or {}),
+                }
+                self.send_mail(
+                    subject_template_name, email_template_name, context, from_email,
+                    user.email, html_email_template_name=html_email_template_name,
+                )
+        return None
 
 
 class PasswordSetForm(auth_forms.SetPasswordForm):
-    """This class merely modifies the widgets in the Django's
-    SetPasswordForm"""
+    """
+    This class merely modifies the widgets in the Django's
+    SetPasswordForm. Used after the user follows the link sent after
+    the password reset process is initiated.
+    """
     def __init__(self, *args, **kwargs):
         super(PasswordSetForm, self).__init__(*args, **kwargs)
-        self.fields['new_password1'].widget = forms.PasswordInput(attrs={'class': 'form-control', 'autofocus': True})
-        self.fields['new_password2'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-password-set-form'
+        self.helper.form_method = 'post'
+        self.helper.html5_required = False
+        self.helper.form_tag = True
+        self.helper.layout = Layout(
+            Fieldset(
+                '',
+                Div(
+                    Field('new_password1', id='new-password',
+                          wrapper_class='col-sm-12 mb-3'),
+                    Field('new_password2', id='new-password-confirm',
+                          wrapper_class='col-sm-12 mb-3'),                          
+                    css_class='form-row'
+                ),
+                Div(
+                    ButtonHolder(
+                        Submit('submit', _('Change my password'), css_class='btn btn-primary col-sm-6'),
+                        css_class='col-sm-12'
+                    ),
+                    css_class='form-row'
+                ),
+            ),
+        )
