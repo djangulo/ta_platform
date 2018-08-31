@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import sys
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 
 from .secrets import (
     SECRET_KEY,
@@ -87,8 +88,9 @@ AUTHENTICATION_BACKENDS = (
 ANONYMOUS_USER_NAME = None
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -104,7 +106,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'common', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -113,8 +115,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'ta_platform.context_processors.get_brand_dict',
-                'ta_platform.context_processors.get_brand_bool',
+                'common.context_processors.get_brand_dict',
+                'common.context_processors.get_brand_bool',
             ],
         },
     },
@@ -174,7 +176,16 @@ LOGIN_REDIRECT_URL = reverse_lazy('home')
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+LANGUAGES = [
+    ('en', _('English')),
+    ('es', _('Spanish')),
+    ('fr', _('French')),
+]
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+)
 
 TIME_ZONE = 'UTC'
 

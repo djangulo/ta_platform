@@ -18,13 +18,13 @@ class RegistrationProcessTest(FunctionalTest):
 
     def test_sign_up_link_redirects(self):
         pass
-        # He then looks for the 'Sign Up' button
+        # He then looks for the 'Register' button
         self.browser.get(self.live_server_url)
-        sign_up = self.browser.find_element_by_link_text('Sign Up')
+        sign_up = self.browser.find_element_by_link_text('Register')
         # and clicks it
         sign_up.click()
-        # he then notices the header reads "Sign Up"
-        self.assertIn('Sign Up', self.browser.title)
+        # he then notices the header reads "Register"
+        self.assertIn('Register', self.browser.title)
 
 
 # John heard of the external referral program, so he
