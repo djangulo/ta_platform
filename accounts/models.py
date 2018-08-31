@@ -81,6 +81,7 @@ class EmailAddressManager(models.Manager):
             user = email.user
         user.email_addresses.all().update(is_primary=False)
         self.get_queryset().filter(pk=email.pk).update(is_primary=True)
+        User.objects.filter(pk=user.pk).update(email=email.email)
         return email
 
 
@@ -95,6 +96,14 @@ class EmailAddress(models.Model):
         null=False,
         related_name='email_addresses',
     )
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    last_modified = models.DateTimeField(auto_now=True, editable=False)
+    modified_by = (
+        models.ForeignKey(settings.AUTH_USER_MODEL,
+                          related_name='%(app_label)s_%(class)s_modified_by',
+                          on_delete=models.SET_NULL, null=True,
+                          blank=True))
+    history = HistoricalRecords()
 
     objects = EmailAddressManager()
 
@@ -278,13 +287,12 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         if password is None:
             password = self.make_random_password()
-        user = self.model(username=username, **extra_fields)
+        user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-        EmailAddress.objects.create(email=email, is_primary=True, user=user)
         return user
 
-    def create_superuser(self, username, email, password):
+    def create_superuser(self, username, password, email=None):
         """Creates super user with all permissions."""
         user = self.create_user(username=username,
                                 email=email,
@@ -316,6 +324,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     username = models.CharField(max_length=30, unique=True, blank=True, null=True)
     username_slug = models.SlugField(unique=True, editable=False, blank=True, null=True)
+    email = models.EmailField(blank=False)
     first_names = models.CharField(max_length=100, blank=True, default='')
     last_names = models.CharField(max_length=100, blank=True, default='')
     birth_date = models.DateField(blank=True, null=True)
@@ -329,7 +338,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['email']
 
     def __str__(self):
         return self.username

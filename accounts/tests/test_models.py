@@ -30,15 +30,14 @@ TEST_MEDIA_ROOT = "/tmp/django_test_media_dump"
 class EmailManagerTest(TestCase):
     def setUp(self):
         self.user = User.objects.create(username=USERNAME,
-                                        password=PASSWORD)
-        self.email1 = EmailAddress.objects.create(email=EMAIL,
-                                                  user=self.user)
+                                        password=PASSWORD,
+                                        email=EMAIL)
+        self.email1 = EmailAddress.objects.get(user=self.user)
         self.email2 = EmailAddress.objects.create(email='salted'+EMAIL,
                                                   user=self.user)
     
     def tearDown(self):
-        for obj in (self.user, self.email1, self.email2):
-            obj.delete()
+        self.user.delete()
 
     def test_can_set_primary_with_pk_no_user(self):
         EmailAddress.objects.set_as_primary(self.email2.pk)
@@ -68,23 +67,21 @@ class EmailManagerTest(TestCase):
 class EmailAddressTest(TestCase):
     def setUp(self):
         self.user = User.objects.create(username=USERNAME,
-                                        password=PASSWORD)
-    def tearDown(self):
-        self.user.delete()
+                                        password=PASSWORD,
+                                        email=EMAIL)
+    # def tearDown(self):
+    #     self.user.delete()
 
     def test_can_create(self):
-        email = EmailAddress.objects.create(email=EMAIL,
+        email = EmailAddress.objects.create(email='salted'+EMAIL,
                                             user=self.user)
-        self.assertEqual(email, EmailAddress.objects.first())
+        self.assertEqual(email, EmailAddress.objects.latest('created_at'))
 
     def test_first_email_is_primary(self):
-        email = EmailAddress.objects.create(email=EMAIL,
-                                            user=self.user)
+        email = self.user.email_addresses.first()
         self.assertTrue(email.is_primary)
 
     def test_emails_after_first_are_not_primary(self):
-        email1 = EmailAddress.objects.create(email=EMAIL,
-                                             user=self.user)
         email2 = EmailAddress.objects.create(email='salted'+EMAIL,
                                              user=self.user)                                            
         self.assertFalse(email2.is_primary)
@@ -93,7 +90,8 @@ class EmailAddressTest(TestCase):
 class AreaCodeTest(TestCase):
     def setUp(self):
         self.user = User.objects.create(username=USERNAME,
-                                        password=PASSWORD)
+                                        password=PASSWORD,
+                                        email=EMAIL)
     def tearDown(self):
         for obj in (self.user,):
             obj.delete()
@@ -110,7 +108,8 @@ class AreaCodeTest(TestCase):
 class PhoneNumberManagerTest(TestCase):
     def setUp(self):
         self.user = User.objects.create(username=USERNAME,
-                                        password=PASSWORD)
+                                        password=PASSWORD,
+                                        email=EMAIL)
         self.area_code = AreaCode.objects.create(code='809')
         self.phone1 = PhoneNumber.objects.create(phone_number=PHONE_NUMBER,
                                                  area_code=self.area_code,
@@ -155,7 +154,8 @@ class PhoneNumberManagerTest(TestCase):
 class PhoneNumberTest(TestCase):
     def setUp(self):
         self.user = User.objects.create(username=USERNAME,
-                                        password=PASSWORD)
+                                        password=PASSWORD,
+                                        email=EMAIL)
     def tearDown(self):
         self.user.delete()
 
@@ -227,13 +227,15 @@ class UserModelTest(TestCase):
             content_type=cls.content_type)
 
     def test_can_create(self):
-        user = User.objects.create(username=USERNAME, password=PASSWORD)
+        user = User.objects.create(username=USERNAME, password=PASSWORD,
+                                   email=EMAIL)
         self.assertEqual(User.objects.first(), user)
 
     def test_can_create_with_all_args(self):
         user = User.objects.create(
             username=USERNAME,
             password=PASSWORD,
+            email=EMAIL,
             birth_date='1916-12-21',
             first_names='Alice',
             last_names='Van Der Laand',
@@ -273,7 +275,7 @@ class UserModelTest(TestCase):
         self.assertFalse(user.is_superuser)
 
     def test_has_perm_returns_true_when_true(self):
-        user = User.objects.create(username=USERNAME, password=PASSWORD)
+        user = User.objects.create(username=USERNAME, password=PASSWORD, email=EMAIL)
         user.groups.add(Group.objects.get(name='superuser'))
         user.save()
         perms = user.get_group_permissions()
