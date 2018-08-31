@@ -27,9 +27,9 @@ admin.site.site_header = "{} administration".format(settings.BRAND_DICT['COMPANY
 urlpatterns = [
     path('admin-contrib/', admin.site.urls),
     path('', HomeView.as_view(), name='home'),
-    # path('apply/', include('applications.urls', namespace='applications')),
+    path('apply/', include('applications.urls', namespace='applications')),
     path('accounts/', include('accounts.urls', namespace='accounts')),
-    # path('admin-console/', include('admin_console.urls', namespace='admin_console')),
+    path('admin-console/', include('admin_console.urls', namespace='admin_console')),
     # path('its/', include('issue_tracker.urls', namespace='its')),
     path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
