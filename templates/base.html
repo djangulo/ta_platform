@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 {% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' as bootstrap_css %}
 {% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' as bootstrap_js %}
 {% static 'jquery-3.2.1.min.js' as jquery %}
@@ -46,7 +47,7 @@
                 <div class="dropdown-menu dropdown-menu-right">
                   <a class="dropdown-item disabled">{{ user.username }}</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="{% url 'accounts:profile' pk=user.pk %}">Your profile</a>
+                  <a class="dropdown-item" href="{% url 'accounts:profile' slug=user.username_slug %}">{% trans "Your profile" %}</a>
                   <a class="dropdown-item" href="#">Your referrals</a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log out</a>

@@ -29,54 +29,6 @@
 
 {% block main_content %}
     {% crispy form form.helper %}
-{% comment %} <form id="registration-form" class="needs-validation" action="" method="POST" novalidate="novalidate">
-        {% csrf_token %}
-        {% for error in form.non_field_errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-        {% endfor %}
-        <div class="form-row">
-            <label class="h3">{% trans "Please fill out the fields below" %}</label>
-        </div>
-        <div class="form-row">
-            <div class="col-sm-12 col-md-12 mb-3">
-                <label class="control-label" for="{{ form.email.html_name }}">
-                    {{ form.email.label }}
-                </label>
-                {{ form.email }}
-                <div class="invalid-feedback">{% trans "This field is required." %}</div>
-                {% for e in form.email.errors %}
-                    <div class="invalid-feedback">{{ e }}</div>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="col-sm-12 col-md-12 mb-3">
-                <label class="control-label" for="{{ form.username.html_name }}">
-                    {{ form.username.label }}
-                </label>
-                {{ form.username }}
-                <div class="invalid-feedback">{% trans "This field is required." %}</div>
-                {% for e in form.username.errors %}
-                <div class="invalid-feedback">{{ e }}</div>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="col-sm-12 col-md-4 mb-3">
-                <div class="pretty p-switch p-fill p-smooth">
-                    {{ form.accepted_eula }}
-                    <div class="state p-primary">
-                        <label class="form-check-label" for="id_{{ form.accepted_eula.html_name }}">{% trans "I have read and accept the" %} <a href="#">{% trans "Terms of Use" %}</a></label>
-                    </div>
-                    <div class="invalid-feedback">{% trans "You must agree before submitting." %}</div>
-                    {% for e in form.accepted_eula.errors %}
-                    <div class="invalid-feedback">{{ e }}</div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        <input class="btn btn-primary" type="submit">
-    </form> {% endcomment %}
 {% endblock %}
 
 {% block app_js %}
