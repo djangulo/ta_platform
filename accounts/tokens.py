@@ -89,5 +89,12 @@ class VerifyUserTokenGenerator:
         # Used for mocking in tests
         return date.today()
 
+
+class ResetTokenGenerator(VerifyUserTokenGenerator):
+    """Subclassing Verify token to change salt."""
+    key_salt = 'accounts.ResetTokenGenerator'
+
+
 #pylint: disable=C0103
 verify_token_generator = VerifyUserTokenGenerator()
+reset_token_generator = ResetTokenGenerator()
