@@ -4,5 +4,4 @@ from django.contrib import admin
 
 from admin_console import models
 
-admin.site.register(models.AreaCode)
 admin.site.register(models.Country)

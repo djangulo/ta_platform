@@ -4,7 +4,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from simple_history.models import HistoricalRecords
 
-from accounts.models import reduce_to_alphanum
 
 class BaseSupportModel(models.Model):
     """Base model for all helper models in admin_console."""
@@ -78,7 +77,7 @@ class Address(BaseSupportModel):
         null=True,
     )
     phone_number = models.ForeignKey(
-        'admin_console.PhoneNumber',
+        'accounts.PhoneNumber',
         related_name='addresses',
         on_delete=models.CASCADE,
         blank=True,
@@ -146,96 +145,96 @@ class Language(BaseSupportModel):
         verbose_name_plural = _('languages')
 
 
-class AreaCode(BaseSupportModel):
-    """Area code model to display in application form."""
-    PREFIX_CHOICES = [
-        '+1',
-        '+502',
-        '+504',
-        '+507',
-        '+509',
-        '+51',
-        '+52',
-        '+55',
-        '+58',
-        '+63',
-    ]
-    PREFIX_CHOICES = [(i, c) for i, c in zip(list(range(len(PREFIX_CHOICES))), PREFIX_CHOICES)]
-    country = models.ForeignKey('admin_console.Country',
-                                related_name='area_codes',
-                                blank=True, null=True,
-                                on_delete=models.CASCADE)
-    prefix = models.IntegerField(choices=PREFIX_CHOICES,
-                                 blank=False, default=0)
-    code = models.CharField(max_length=5, blank=False)
+# class AreaCode(BaseSupportModel):
+#     """Area code model to display in application form."""
+#     PREFIX_CHOICES = [
+#         '+1',
+#         '+502',
+#         '+504',
+#         '+507',
+#         '+509',
+#         '+51',
+#         '+52',
+#         '+55',
+#         '+58',
+#         '+63',
+#     ]
+#     PREFIX_CHOICES = [(i, c) for i, c in zip(list(range(len(PREFIX_CHOICES))), PREFIX_CHOICES)]
+#     country = models.ForeignKey('admin_console.Country',
+#                                 related_name='area_codes',
+#                                 blank=True, null=True,
+#                                 on_delete=models.CASCADE)
+#     prefix = models.IntegerField(choices=PREFIX_CHOICES,
+#                                  blank=False, default=0)
+#     code = models.CharField(max_length=5, blank=False)
 
-    def __str__(self):
-        if self.country:
-            return '%s: %s %s' % (self.country.name, self.get_prefix_display(), self.code,)
-        return self.code
+#     def __str__(self):
+#         if self.country:
+#             return '%s: %s %s' % (self.country.name, self.get_prefix_display(), self.code,)
+#         return self.code
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super(AreaCode, self).save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         self.full_clean()
+#         return super(AreaCode, self).save(*args, **kwargs)
 
-    def clean(self, *args, **kwargs):
-        if not self.name:
-            if self.country:
-                self.name = self.country.name
-            self.name = self.code
-        return super(AreaCode, self).clean(*args, **kwargs)
+#     def clean(self, *args, **kwargs):
+#         if not self.name:
+#             if self.country:
+#                 self.name = self.country.name
+#             self.name = self.code
+#         return super(AreaCode, self).clean(*args, **kwargs)
 
-    class Meta(BaseSupportModel.Meta):
-        verbose_name = _('Area code')
-        ordering = ('name',)
-
-
-class PhoneNumberManager(models.Manager):
-    def set_as_primary(self, phone_number, user=None):
-        """
-        Sets an phone number as primary for a particular user.
-        """
-        if isinstance(phone_number, int):
-            phone_number = self.get_queryset().get(pk=phone_number)
-        if isinstance(phone_number, str):
-            phone_number = self.get_queryset().get(phone_number=phone_number)
-        if user is None:
-            user = phone_number.user
-        user.email_addresses.all().update(is_primary=False)
-        self.get_queryset().filter(pk=phone_number.pk).update(is_primary=True)
-        return phone_number
+#     class Meta(BaseSupportModel.Meta):
+#         verbose_name = _('Area code')
+#         ordering = ('name',)
 
 
-class PhoneNumber(models.Model):
-    """Model to unify all Phone related stuff."""
-    phone_number = models.CharField(max_length=12, blank=False)
-    is_primary = models.BooleanField(default=False)
-    area_code = models.ForeignKey(
-        'admin_console.AreaCode',
-        related_name='phone_numbers',
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-    )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name='phone_numbers',
-        on_delete=models.CASCADE,
-        blank=False,
-        null=False
-    )
+# class PhoneNumberManager(models.Manager):
+#     def set_as_primary(self, phone_number, user=None):
+#         """
+#         Sets an phone number as primary for a particular user.
+#         """
+#         if isinstance(phone_number, int):
+#             phone_number = self.get_queryset().get(pk=phone_number)
+#         if isinstance(phone_number, str):
+#             phone_number = self.get_queryset().get(phone_number=phone_number)
+#         if user is None:
+#             user = phone_number.user
+#         user.email_addresses.all().update(is_primary=False)
+#         self.get_queryset().filter(pk=phone_number.pk).update(is_primary=True)
+#         return phone_number
 
-    def __str__(self):
-        return '(%s)%s-%s' % (self.area_code, self.phone_number[:3], self.phone_number[3:])
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super(PhoneNumber, self).save(*args, **kwargs)
+# class PhoneNumber(models.Model):
+#     """Model to unify all Phone related stuff."""
+#     phone_number = models.CharField(max_length=12, blank=False)
+#     is_primary = models.BooleanField(default=False)
+#     area_code = models.ForeignKey(
+#         'admin_console.AreaCode',
+#         related_name='phone_numbers',
+#         on_delete=models.CASCADE,
+#         blank=True,
+#         null=True,
+#     )
+#     user = models.ForeignKey(
+#         settings.AUTH_USER_MODEL,
+#         related_name='phone_numbers',
+#         on_delete=models.CASCADE,
+#         blank=False,
+#         null=False
+#     )
 
-    def clean(self, *args, **kwargs):
-        self.area_code = reduce_to_alphanum(self.area_code)
-        self.phone_number = reduce_to_alphanum(self.phone_number)
-        super(PhoneNumber, self).clean(*args, **kwargs)
+#     def __str__(self):
+#         return '(%s)%s-%s' % (self.area_code, self.phone_number[:3], self.phone_number[3:])
+
+#     def save(self, *args, **kwargs):
+#         self.full_clean()
+#         super(PhoneNumber, self).save(*args, **kwargs)
+
+#     def clean(self, *args, **kwargs):
+#         self.area_code = reduce_to_alphanum(self.area_code)
+#         self.phone_number = reduce_to_alphanum(self.phone_number)
+#         super(PhoneNumber, self).clean(*args, **kwargs)
 
 
 class CityTown(BaseSupportModel):

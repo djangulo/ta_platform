@@ -1,7 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.contrib.admin.widgets import FilteredSelectMultiple, AdminDateWidget
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, Group
 from django.utils.translation import gettext as _
 
 import admin_console.models as admin_models
@@ -56,7 +56,7 @@ class GroupForm(forms.ModelForm):
     name = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'form-control'}))
     class Meta:
-        model = accounts_models.ModGroup
+        model = Group
         fields = (
             'name',
             'permissions',
@@ -70,7 +70,7 @@ class PhoneNumberForm(forms.ModelForm):
     area_code = forms.ModelChoiceField(
         label=_('Area code'),
         required=True,
-        queryset=admin_models.AreaCode.objects.filter(
+        queryset=accounts_models.AreaCode.objects.filter(
             display_in_form=True
         ),
         widget=forms.Select(attrs={
@@ -85,7 +85,7 @@ class PhoneNumberForm(forms.ModelForm):
                                     'placeholder': '000-0000',
                                 }))
     class Meta:
-        model = admin_models.PhoneNumber
+        model = accounts_models.PhoneNumber
         fields = ('area_code', 'phone_number',)
 
 
@@ -105,7 +105,7 @@ class PhoneNumberAdminForm(PhoneNumberForm):
 class AreaCodeForm(forms.ModelForm):
     prefix = forms.ChoiceField(label=_('Prefix'),
                                required=True,
-                               choices=admin_models.AreaCode.PREFIX_CHOICES,
+                               choices=accounts_models.AreaCode.PREFIX_CHOICES,
                                widget=forms.Select(attrs={
                                    'class': 'form-control dropdown',
                                }))
@@ -131,7 +131,7 @@ class AreaCodeForm(forms.ModelForm):
                                              'class': 'form-check-input',
                                          }))
     class Meta:
-        model = admin_models.AreaCode
+        model = accounts_models.AreaCode
         fields = ('prefix', 'code', 'country', 'display_in_form')
 
 
@@ -414,7 +414,7 @@ class InstitutionForm(forms.ModelForm):
 
 #     groups = forms.ModelMultipleChoiceField(
 #         widget=FilteredSelectMultiple('Groups', is_stacked=False),
-#         queryset=ModGroup.objects.all()
+#         queryset=Group.objects.all()
 #     )
 
 #     class Meta:

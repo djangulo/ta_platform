@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
 from django.views.generic import (
     DetailView,
@@ -9,7 +10,7 @@ from django.views.generic import (
 from django.urls import reverse_lazy
 from django.utils import timezone
 
-from accounts.models import ModGroup, User, Profile
+from accounts.models import User, Profile
 from admin_console.forms import AdminUserCreationForm, GroupForm
 
 EIGHTEEN_YEARS_AGO = (timezone.now() - timezone.timedelta(days=((365*18)+5))
@@ -25,19 +26,19 @@ class AdminAccountsView(TemplateView):
     template_name = 'admin_console/accounts.html'
 
 class GroupListView(ListView):
-    model = ModGroup
+    model = Group
     template_name = 'admin_console/modgroup_list.html'
 
 
 class GroupCreateView(CreateView):
-    model = ModGroup
+    model = Group
     template_name = 'admin_console/modgroup_form.html'
     from_class = GroupForm
     fields = ('name', 'permissions', )
 
 
 class GroupDetailView(DetailView):
-    model = ModGroup
+    model = Group
     template_name = 'admin_console/modgroup_detail.html'
 
     def get_context_data(self, *args, **kwargs):
@@ -48,7 +49,7 @@ class GroupDetailView(DetailView):
 
 
 class GroupUpdateView(UpdateView):
-    model = ModGroup
+    model = Group
     form_class = GroupForm
     template_name = 'admin_console/modgroup_form.html'
 
