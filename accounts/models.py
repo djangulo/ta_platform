@@ -324,7 +324,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         (NON_REHIRABLE, _('Non-rehirable')),
     )
     username = models.CharField(max_length=30, unique=True, blank=True, null=True)
-    username_slug = models.SlugField(unique=True, editable=False, blank=True, null=True)
+    slug = models.SlugField(unique=True, editable=False, blank=True, null=True)
     email = models.EmailField(blank=False)
     first_names = models.CharField(max_length=100, blank=True, default='')
     last_names = models.CharField(max_length=100, blank=True, default='')
@@ -345,7 +345,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.username
 
     def clean(self, *args, **kwargs):
-        self.username_slug = slugify(self.username)
+        self.slug = slugify(self.username)
         super(User, self).clean(*args, **kwargs)
 
     def save(self, *args, **kwargs):

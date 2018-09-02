@@ -53,7 +53,7 @@
                 <div class="dropdown-menu dropdown-menu-right">
                   <a class="dropdown-item disabled">{{ user.username }}</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="{% url 'accounts:profile' slug=user.username_slug %}">{% trans "My profile" %}</a>
+                  <a class="dropdown-item" href="{% url 'accounts:profile' slug=user.slug %}">{% trans "My profile" %}</a>
                   <a class="dropdown-item" href="#">{% trans "My referrals" %}</a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log out</a>

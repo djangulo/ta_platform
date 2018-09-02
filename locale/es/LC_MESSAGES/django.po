@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-31 17:32-0400\n"
+"POT-Creation-Date: 2018-09-01 21:12-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,46 +18,65 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: common/forms.py:18
-msgid "Next"
-msgstr "Siguiente"
-
-#: common/templates/base.html:36
+#: common/templates/base.html:37 common/templates/home.html:29
 msgid "Apply now!"
-msgstr "&iexcl;Aplicar ahora!"
+msgstr "¡Aplicar ahora!"
 
-#: common/templates/base.html:55
+#: common/templates/base.html:56
 msgid "My profile"
 msgstr "Mi perfil"
 
-#: common/templates/base.html:62
+#: common/templates/base.html:57
+msgid "My referrals"
+msgstr ""
+
+#: common/templates/base.html:63
 msgid "Register"
 msgstr "Registrarse"
 
-#: common/templates/base.html:64
+#: common/templates/base.html:65
 msgid "Login"
-msgstr "Iniciar sesi&oacute;n"
+msgstr "Iniciar sesión"
+
+#: common/templates/base.html:81
+msgid ""
+"\n"
+"                  <input type=\"submit\" class=\"input-group-text\" value="
+"\"Go\"/>\n"
+"                  "
+msgstr ""
+"\n"
+"                  <input type=\"submit\" class=\"input-group-text\" value="
+"\"Ir\"/>\n"
+"                  "
+
+#: common/templates/home.html:30
+msgid "Join our wonderful team of go-getters!"
+msgstr ""
 
 #: ta_platform/settings.py:181
 msgid "English"
-msgstr "Ingl&eacute;s"
+msgstr "Inglés"
 
 #: ta_platform/settings.py:182
 msgid "Spanish"
-msgstr "Espa&ntilde;ol"
+msgstr "Español"
 
 #: ta_platform/settings.py:183
 msgid "French"
-msgstr "Franc&eacute;s"
+msgstr "Francés"
 
-#: ta_platform/urls.py:42
+#: ta_platform/urls.py:41
 msgid "apply/"
 msgstr "aplicar/"
 
-#: ta_platform/urls.py:43
+#: ta_platform/urls.py:42
 msgid "accounts/"
 msgstr "cuentas/"
 
-#: ta_platform/urls.py:44
+#: ta_platform/urls.py:43
 msgid "admin-console/"
 msgstr "consola-admin"
+
+#~ msgid "Next"
+#~ msgstr "Siguiente"

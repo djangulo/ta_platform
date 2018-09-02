@@ -310,9 +310,7 @@ class LoginForm(auth_forms.AuthenticationForm):
                           wrapper_class='col-sm-12 mb-3'),
                     Field('password', id='last-names',
                           wrapper_class='col-sm-12 mb-3'),
-                    HTML(_("""
-                        <p><a href="{% url 'accounts:password_reset' %}">Forgot your password?</a></p>
-                    """)),
+                    HTML(_("""<p><a href="{% url 'accounts:password_reset' %}">Forgot your password?</a></p>""")),
                     css_class='form-row'
                 ),
                 Div(

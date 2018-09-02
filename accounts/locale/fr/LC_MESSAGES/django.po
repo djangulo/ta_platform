@@ -16,19 +16,19 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: accounts/apps.py:7
 msgid "accounts"
-msgstr ""
+msgstr "comptes"
 
 #: accounts/forms.py:36 accounts/forms.py:54
 msgid "ID Type"
-msgstr ""
+msgstr "type d'id"
 
 #: accounts/forms.py:38 accounts/forms.py:56
 msgid "ID Number"
-msgstr ""
+msgstr "numéro d'identification"
 
 #: accounts/forms.py:44
 msgid "The two password fields didn't match."
@@ -36,130 +36,132 @@ msgstr ""
 
 #: accounts/forms.py:46
 msgid "First names"
-msgstr ""
+msgstr "Prénom"
 
 #: accounts/forms.py:47
 msgid "Last names"
-msgstr ""
+msgstr "Nom"
 
 #: accounts/forms.py:48
 msgid "Email"
-msgstr ""
+msgstr "Courriel"
 
 #: accounts/forms.py:49
 msgid "Username"
-msgstr ""
+msgstr "Nom d'utilisateur"
 
 #: accounts/forms.py:50
 msgid "Accept Terms of Service"
-msgstr ""
+msgstr "Accepter les conditions d'utilisation"
 
 #: accounts/forms.py:52
 msgid "Birth date"
-msgstr ""
+msgstr "Date de naissance"
 
 #: accounts/forms.py:58
 msgid "Password"
-msgstr ""
+msgstr "Mot de passe"
 
 #: accounts/forms.py:64
 msgid "Password confirmation"
-msgstr ""
+msgstr "Confirmation mot de passe"
 
 #: accounts/forms.py:67
 msgid "Enter the same password as before, for verification."
-msgstr ""
+msgstr "Entrez le même mot de passe que prédecemment pour vérification."
 
 #: accounts/forms.py:96
 msgid "{{ COMPANY_NAME }}: Register"
-msgstr ""
+msgstr "{{ COMPANY_NAME }}: S'incrire"
 
 #: accounts/forms.py:141
 msgid "I have read and accepted the Terms of Service."
-msgstr ""
+msgstr "J'ai lu et accepte les Termes d'Utilisation"
 
 #: accounts/forms.py:216
 msgid "This National ID already exists."
-msgstr ""
+msgstr "Cet identifiant national existe déjè."
 
 #: accounts/forms.py:234
 #, python-format
 msgid "You must be %(value)s years old to enroll."
-msgstr ""
+msgstr "Vous devez avoir %(value)s ans pour vous incrire"
 
 #: accounts/forms.py:313
 msgid ""
 "<p><a href=\"{% url 'accounts:password_reset' %}\">Forgot your password?</"
 "a></p>"
 msgstr ""
+"<p><a href=\"{% url 'accounts:password_reset' %}\">Mot de passe oublié ?</"
+"a></p>"
 
 #: accounts/forms.py:352 accounts/forms.py:385
 msgid "Submit"
-msgstr ""
+msgstr "Soumettre"
 
 #: accounts/forms.py:353
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: accounts/forms.py:365
 msgid "Email or username"
-msgstr ""
+msgstr "Courriel ou nom d'utilisateur"
 
 #: accounts/forms.py:482
 msgid "Change my password"
-msgstr ""
+msgstr "Changer mon mot de passe"
 
 #: accounts/models.py:205
 msgid "Area code"
-msgstr ""
+msgstr "Indicatif régional"
 
 #: accounts/models.py:321
 msgid "Active"
-msgstr ""
+msgstr "Actif"
 
 #: accounts/models.py:322
 msgid "Termed"
-msgstr ""
+msgstr "Appelé"
 
 #: accounts/models.py:323
 msgid "Never worked for us"
-msgstr ""
+msgstr "N'a jamais travaillé pour nous"
 
 #: accounts/models.py:324
 msgid "Non-rehirable"
-msgstr ""
+msgstr "Non souhaitable"
 
 #: accounts/models.py:420
 msgid "Cedula"
-msgstr ""
+msgstr "Cedula"
 
 #: accounts/models.py:421
 msgid "Passport"
-msgstr ""
+msgstr "Passeport"
 
 #: accounts/models.py:422
 msgid "Social Security Number"
-msgstr ""
+msgstr "Numéro de sécurité sociale"
 
 #: accounts/models.py:427
 msgid "ID Type: Cedula, SSN, Passport"
-msgstr ""
+msgstr "Type d'ID: Cedula, NSS, passeport"
 
 #: accounts/models.py:478
 msgid "Male"
-msgstr ""
+msgstr "Masculin"
 
 #: accounts/models.py:479
 msgid "Female"
-msgstr ""
+msgstr "Féminin"
 
 #: accounts/models.py:498
 msgid "profile"
-msgstr ""
+msgstr "profil"
 
 #: accounts/models.py:499
 msgid "profiles"
-msgstr ""
+msgstr "profils"
 
 #: accounts/templates/accounts/login.html:18
 #: accounts/templates/accounts/logout.html:20
@@ -190,7 +192,7 @@ msgstr ""
 
 #: accounts/templates/accounts/password_change_complete.html:9
 msgid "Password change successful"
-msgstr ""
+msgstr "Changement de mot de passe réussi"
 
 #: accounts/templates/accounts/password_change_complete.html:22
 #: accounts/templates/accounts/password_reset_complete.html:22
@@ -198,7 +200,7 @@ msgstr ""
 #: accounts/templates/accounts/password_reset_done.html:22
 #: accounts/templates/accounts/password_reset_form.html:23
 msgid "Account"
-msgstr ""
+msgstr "Compte"
 
 #: accounts/templates/accounts/password_change_complete.html:25
 #: accounts/templates/accounts/password_reset_complete.html:25
@@ -210,35 +212,35 @@ msgstr ""
 #: accounts/templates/accounts/registration_verification_sent.html:19
 #: accounts/templates/accounts/registration_verification_sent.html:24
 msgid "Password reset"
-msgstr ""
+msgstr "Réinitialiser le mot de passe"
 
 #: accounts/templates/accounts/password_change_complete.html:30
 #: accounts/templates/accounts/password_reset_complete.html:30
 msgid "Password reset complete"
-msgstr ""
+msgstr "Réinitialiser du mot de passe terminée"
 
 #: accounts/templates/accounts/password_change_complete.html:31
 msgid "You have succesfully changed your password."
-msgstr ""
+msgstr "Vous avez changé votre mot de passe avec succès."
 
 #: accounts/templates/accounts/password_change_form.html:20
 msgid "Accounts"
-msgstr ""
+msgstr "Comptes"
 
 #: accounts/templates/accounts/password_change_form.html:22
 #: accounts/templates/accounts/password_reset_confirm.html:37
 msgid "Change password"
-msgstr ""
+msgstr "Changer le mot de passe"
 
 #: accounts/templates/accounts/password_change_form.html:32
 msgid "Password change"
-msgstr ""
+msgstr "Changement de mot de passe"
 
 #: accounts/templates/accounts/password_reset_complete.html:9
 #: accounts/templates/accounts/password_reset_done.html:9
 #: accounts/templates/accounts/registration_verification_sent.html:9
 msgid "Password reset successful"
-msgstr ""
+msgstr "Réinitialisation du mot de passe réussie"
 
 #: accounts/templates/accounts/password_reset_complete.html:32
 #, python-format
@@ -248,18 +250,22 @@ msgid ""
 "\"%(login_url)s\">login</a>.</p>\n"
 "  "
 msgstr ""
+"\n"
+"  <p>Votre mot de passe a été réinitialisé. Vous pouvez aller de l'avant et "
+"vous <a href=\"%(login_url)s\">connecter</a>.</p>\n"
+"  "
 
 #: accounts/templates/accounts/password_reset_confirm.html:10
 msgid "Set new password"
-msgstr ""
+msgstr "Définir un nouveau mot de passe"
 
 #: accounts/templates/accounts/password_reset_confirm.html:26
 msgid "Reset password"
-msgstr ""
+msgstr "Réinitialiser le mot de passe"
 
 #: accounts/templates/accounts/password_reset_confirm.html:44
 msgid "We're sorry..."
-msgstr ""
+msgstr "Nous sommes désolés..."
 
 #: accounts/templates/accounts/password_reset_confirm.html:46
 #, python-format
@@ -267,17 +273,21 @@ msgid ""
 " <p>...but this password reset link has expired. Please <a href="
 "\"%(pass_reset_url)s\">request a new one</a></p>"
 msgstr ""
+" <p>... mais ce lien de réinitialisation du mot de passe a expiré. S'il vous "
+"plaît <a href=\"%(pass_reset_url)s\">demander un nouveau</a></p>"
 
 #: accounts/templates/accounts/password_reset_done.html:31
 msgid ""
 "We've emailed you instructions for resetting your password to the e-mail "
 "addres you submitted."
 msgstr ""
+"Nous vous avons envoyé des instructions par courrier électronique pour "
+"réinitialiser votre mot de passe à l'adresse e-mail que vous avez soumise."
 
 #: accounts/templates/accounts/password_reset_done.html:32
 #: accounts/templates/accounts/registration_verification_sent.html:26
 msgid "You should be receiving it shortly."
-msgstr ""
+msgstr "Vous devriez le recevoir sous peu."
 
 #: accounts/templates/accounts/password_reset_email.html:4
 #, python-format
@@ -286,51 +296,59 @@ msgid ""
 "You're receiving this e-mail because you requested \n"
 "a password reset for your user account at %(_site_name)s.\n"
 msgstr ""
+"\n"
+"Vous recevez cet e-mail car vous avez demandé \n"
+"une réinitialisation du mot de passe pour votre compte utilisateur à "
+"%(_site_name)s.\n"
 
 #: accounts/templates/accounts/password_reset_email.html:9
 msgid "Please go to the following page and choose a new password:"
 msgstr ""
+"S'il vous plaît aller à la page suivante et choisissez un nouveau mot de "
+"passe:"
 
 #: accounts/templates/accounts/password_reset_email.html:15
 #: accounts/templates/accounts/registration_email.html:14
 msgid "Your username, in case you've forgotten:"
-msgstr ""
+msgstr "Votre nom d'utilisateur, en cas d'oubli"
 
 #: accounts/templates/accounts/password_reset_email.html:17
 #: accounts/templates/accounts/registration_email.html:16
 msgid "Thank you for using our site!"
-msgstr ""
+msgstr "Merci d'utiliser notre site !"
 
 #: accounts/templates/accounts/password_reset_email.html:19
 #: accounts/templates/accounts/registration_email.html:18
 #, python-format
 msgid "The %(_site_name)s team"
-msgstr ""
+msgstr "L'équipe de %(_site_name)s"
 
 #: accounts/templates/accounts/password_reset_form.html:38
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll email you "
 "instructions for setting a new one."
 msgstr ""
+"Mot de passe oublié? Entrez votre adresse e-mail ci-dessous et nous vous "
+"enverrons des instructions par email pour en définir une nouvelle."
 
 #: accounts/templates/accounts/registration_complete.html:9
 msgid "{{ user.username }} verified"
-msgstr ""
+msgstr "{{ user.username }} vérifié"
 
 #: accounts/templates/accounts/registration_complete.html:19
 #: accounts/templates/accounts/registration_done.html:19
 #: accounts/templates/accounts/registration_form.html:23
 msgid "Sign up"
-msgstr ""
+msgstr "S'incrire"
 
 #: accounts/templates/accounts/registration_complete.html:24
 #: accounts/templates/accounts/registration_done.html:24 accounts/views.py:103
 msgid "Registration complete"
-msgstr ""
+msgstr "Inscription complète"
 
 #: accounts/templates/accounts/registration_complete.html:25
 msgid "You've now completed the registration process."
-msgstr ""
+msgstr "Vous avez maintenant terminè le processus d'inscription."
 
 #: accounts/templates/accounts/registration_complete.html:29
 #, python-format
@@ -340,10 +358,15 @@ msgid ""
 "\"h5\" href=\"%(referurl)s\">start referring!</a> </p>\n"
 "  "
 msgstr ""
+"\n"
+"  <p>Vous pouvez maintenat <a class=\"h5\" href=\"%(loginurl)s\">vous "
+"connecter</a> ou <a class=\"h5\" href=\"%(referurl)s\">commencer à vous "
+"référer !</a> </p>\n"
+"  "
 
 #: accounts/templates/accounts/registration_done.html:9
 msgid "Sign up successful"
-msgstr ""
+msgstr "Inscription réussie"
 
 #: accounts/templates/accounts/registration_done.html:25
 msgid "We've sent you an email to verify your email address."
@@ -352,6 +375,8 @@ msgstr ""
 #: accounts/templates/accounts/registration_done.html:26
 msgid "You should be receiving our email shortly."
 msgstr ""
+"Nous vous avons envoyé un courrier électronique pour vérifier votre adresse "
+"e-mail."
 
 #: accounts/templates/accounts/registration_email.html:4
 #, python-format
@@ -359,85 +384,91 @@ msgid ""
 "\n"
 "Thank you for registering with %(_site_name)s.\n"
 msgstr ""
+"\n"
+"Merci de vous enregistrer avec %(_site_name)s.\n"
 
 #: accounts/templates/accounts/registration_email.html:8
 msgid "Please follow the link below to complete your registration process."
 msgstr ""
+"Veuillez suivre le lien ci-dessous pour terminer votre processus "
+"d'inscription."
 
 #: accounts/templates/accounts/registration_form.html:13 accounts/views.py:62
 msgid "Register"
-msgstr ""
+msgstr "Registre"
 
 #: accounts/templates/accounts/registration_subject.txt:1
 msgid "Verification required for:"
-msgstr ""
+msgstr "Vérification requise pour:"
 
 #: accounts/templates/accounts/registration_verification_sent.html:25
 msgid ""
 "We've emailed you instructions for to complete your registration to the "
 "email address you've submitted."
 msgstr ""
+"Nous vous avons envoyé des instructions par courrier électronique pour "
+"compléter votre inscription à l'adresse e-mail que vous avez soumise."
 
 #: accounts/urls.py:8
 msgid "login/"
-msgstr ""
+msgstr "connecter/"
 
 #: accounts/urls.py:9
 msgid "logout/"
-msgstr ""
+msgstr "connectez-out/"
 
 #: accounts/urls.py:10
 msgid "register/"
-msgstr ""
+msgstr "registre"
 
 #: accounts/urls.py:11
 msgid "register/done/"
-msgstr ""
+msgstr "registre/termine/"
 
 #: accounts/urls.py:13
 msgid "register/verify/<uidb64>/<token>/"
-msgstr ""
+msgstr "registre/verifier/<uidb64>/<token>/"
 
 #: accounts/urls.py:16
 msgid "register/complete/"
-msgstr ""
+msgstr "registre/achevee/"
 
 #: accounts/urls.py:19
 msgid "password/change/"
-msgstr ""
+msgstr "mot-de-passe/changement/"
 
 #: accounts/urls.py:22
 msgid "password/change/done/"
-msgstr ""
+msgstr "mot-de-passe/changement/termine/"
 
 #: accounts/urls.py:25
 msgid "password/reset/"
-msgstr ""
+msgstr "mot-de-passe/reinitialiser/"
 
 #: accounts/urls.py:28
 msgid "password/reset/done/"
-msgstr ""
+msgstr "mot-de-passe/reinitialiser/termine/"
 
 #: accounts/urls.py:31
 msgid "password/reset/confirm/<uidb64>/<token>/"
-msgstr ""
+msgstr "mot-de-passe/reinitialiser/confirmer/<uidb64>/<token>/"
 
 #: accounts/urls.py:34
 msgid "password/reset/complete/"
-msgstr ""
+msgstr "mot-de-passe/reinitialiser/achevee"
 
 #: accounts/urls.py:37
 msgid "<slug:slug>/"
-msgstr ""
+msgstr "<slug:slug>/"
 
 #: accounts/urls.py:40
 msgid "<slug:slug>/my-account"
-msgstr ""
+msgstr "<slug:slug>/mon-compte"
 
 #: accounts/views.py:33
 msgid "You have successfully logged out."
-msgstr ""
+msgstr "Vous vous êtes déconnecté avec succès."
 
 #: accounts/views.py:152
 msgid "Verification unsuccessful"
-msgstr ""
+msgstr "Vérification infructueuse"

@@ -1,5 +1,6 @@
 from django import forms
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import views, get_user_model
 from django.contrib.sites.shortcuts import get_current_site
@@ -12,7 +13,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.template import loader
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_bytes
-from django.urls import reverse_lazy, reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views import generic
 from django.utils.translation import ugettext_lazy as _
 from accounts.forms import (
@@ -42,6 +43,11 @@ class ProfileDetailView(generic.DetailView):
     template_name = 'accounts/profile_detail.html'
 
 
+class AccountDetailView(generic.DetailView):
+    model = User
+    template_name = 'accounts/account_detail.html'
+
+
 class RegistrationView(generic.CreateView):
     form_class = RegistrationForm
     token_generator = verify_token_generator
@@ -55,12 +61,19 @@ class RegistrationView(generic.CreateView):
     html_email_template_name = None
     title = _('Register')
 
-    # def get(self, request, *args, **kwargs):
-        # if request.user.is_authenticated:
-        #     return HttpResponseRedirect(reverse_lazy('accounts:profile', kwargs={
-        #         'slug': request.user.username_slug
-        #     }))
-        # super(RegistrationView, self).get(request, *args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        # Try to dispatch to the right method; if a method doesn't exist,
+        # defer to the error handler. Also defer to the error handler if the
+        # request method isn't on the approved list.
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(reverse('accounts:account', kwargs={
+                'slug': request.user.slug,
+            }))
+        if request.method.lower() in self.http_method_names:
+            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
+        else:
+            handler = self.http_method_not_allowed
+        return handler(request, *args, **kwargs)
 
     def form_valid(self, form):
         opts = {
@@ -75,7 +88,7 @@ class RegistrationView(generic.CreateView):
         }
 
         form.save(**opts)
-        return HttpResponseRedirect(reverse_lazy('accounts:register_done'))
+        return HttpResponseRedirect(reverse('accounts:register_done'))
 
 
 class RegistrationDoneView(generic.TemplateView):
@@ -101,22 +114,26 @@ class RegistrationVerifyView(generic.TemplateView):
 
         if self.user is not None:
             token = kwargs['token']
-            if self.token_generator.check_token(self.user, token):
-                # Store the token in the session and redirect to the
-                # "verification succesful" message at a URL without
-                # the token. That avoids the possibility of leaking
-                # the token in the HTTP Referer header.
-                self.request.session[INTERNAL_VERIFICATION_SESSION_TOKEN] = token
-                redirect_url = self.request.path.replace(
-                    token,
-                    INTERNAL_VERIFICATION_URL_TOKEN
-                )
-                User.objects.filter(id=self.user.id).update(is_verified=True,
-                                                            is_active=True)
-                EmailAddress.objects.filter(email=self.user.email).update(
-                    is_verified=True,
-                )
-                return HttpResponseRedirect(redirect_url)
+            if token == INTERNAL_VERIFICATION_URL_TOKEN:
+                session_token = self.request.session.get(
+                    INTERNAL_VERIFICATION_SESSION_TOKEN)
+                if self.token_generator.check_token(self.user, session_token):
+                    # If the token is valid, display the password reset form.
+                    self.validlink = True
+                    self.activate_user_and_email()
+                    return super().dispatch(*args, **kwargs)
+            else:
+                if self.token_generator.check_token(self.user, token):
+                    # Store the token in the session and redirect to the
+                    # "verification succesful" message at a URL without
+                    # the token. That avoids the possibility of leaking
+                    # the token in the HTTP Referer header.
+                    self.request.session[INTERNAL_VERIFICATION_SESSION_TOKEN] = token
+                    redirect_url = self.request.path.replace(
+                        token,
+                        INTERNAL_VERIFICATION_URL_TOKEN
+                    )
+                    return HttpResponseRedirect(redirect_url)
 
         # Display the "Password reset unsuccessful" page.
         return self.render_to_response(self.get_context_data())
@@ -136,11 +153,17 @@ class RegistrationVerifyView(generic.TemplateView):
             context['validlink'] = True
         else:
             context.update({
-                'form': None,
                 'title': _('Verification unsuccessful'),
                 'validlink': False,
             })
         return context
+
+    def activate_user_and_email(self):
+        User.objects.filter(id=self.user.id).update(is_verified=True,
+                                                    is_active=True)
+        EmailAddress.objects.filter(
+            email=self.user.email
+        ).update(is_verified=True)
 
 class RegistrationCompleteView(views.PasswordResetCompleteView):
     template_name = 'accounts/password_reset_complete.html'

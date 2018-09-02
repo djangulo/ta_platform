@@ -51,13 +51,13 @@ class RegistrationFormTest(TestCase):
     def test_save_on_empty_form_does_nothing(self, mock_send_mail):
         form = RegistrationForm()
         form.save()
-        self.assertEqual(mock_send_mail.called, False)
+        self.assertFalse(mock_send_mail.called)
 
     @patch('accounts.forms.RegistrationForm.send_mail')
     def test_valid_form_sends_email(self, mock_send_mail):
         form = RegistrationForm(data=TEST_DATA)
         form.save()
-        self.assertTrue(mock_send_mail.called, True)
+        self.assertTrue(mock_send_mail.called)
 
     def test_all_fields_are_required(self):
         form = RegistrationForm(data={'wrong': 'data'})
