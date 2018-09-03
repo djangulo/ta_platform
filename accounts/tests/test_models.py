@@ -331,7 +331,7 @@ class NationalIdTest(TestCase):
         with self.assertRaises(FileNotFoundError):
             open(path, 'rb')
 
-    def test_user_directory_path(self):
+    def test_verification_image_dir_path(self):
         natid = NationalId.objects.create(
             id_type=ID_TYPE,
             id_number=ID_NUMBER,

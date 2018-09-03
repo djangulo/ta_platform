@@ -24,7 +24,7 @@ from accounts.forms import (
     RegistrationForm,
 )
 from accounts.models import User, Profile, NationalId, EmailAddress
-from accounts.tokens import verify_token_generator
+from accounts.tokens import verify_token_generator, reset_token_generator
 
 # if settings.BRANDING:
 #     COMPANY_NAME = settings.BRAND_DICT.get('COMPANY_NAME')
@@ -70,7 +70,8 @@ class RegistrationView(generic.CreateView):
                 'slug': request.user.slug,
             }))
         if request.method.lower() in self.http_method_names:
-            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
+            handler = getattr(self, request.method.lower(),
+                              self.http_method_not_allowed)
         else:
             handler = self.http_method_not_allowed
         return handler(request, *args, **kwargs)
@@ -128,7 +129,8 @@ class RegistrationVerifyView(generic.TemplateView):
                     # "verification succesful" message at a URL without
                     # the token. That avoids the possibility of leaking
                     # the token in the HTTP Referer header.
-                    self.request.session[INTERNAL_VERIFICATION_SESSION_TOKEN] = token
+                    self.request.session[
+                        INTERNAL_VERIFICATION_SESSION_TOKEN] = token
                     redirect_url = self.request.path.replace(
                         token,
                         INTERNAL_VERIFICATION_URL_TOKEN
@@ -143,7 +145,8 @@ class RegistrationVerifyView(generic.TemplateView):
             # urlsafe_base64_decode() decodes to bytestring
             uid = urlsafe_base64_decode(uidb64).decode()
             user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist, ValidationError):
+        except (TypeError, ValueError, OverflowError,
+                User.DoesNotExist, ValidationError):
             user = None
         return user
 
@@ -176,13 +179,15 @@ class LoginView(SuccessMessageMixin, views.LoginView):
     redirect_authenticated_user = True
 
 
-class LogoutView(SuccessMessageMixin, views.LogoutView):
+class LogoutView(views.LogoutView):
     """This view only changes the available options in the Django's
     LogoutView."""
-    template_name = 'accounts/logout.html'
+    # template_name = 'accounts/logout.html'
     next_page = reverse_lazy('home')
-    success_message = LOGOUT_MESSAGE
 
+    def dispatch(self, request, *args, **kwargs):
+        messages.info(request, LOGOUT_MESSAGE)
+        return super(LogoutView, self).dispatch(request, *args, **kwargs)
 
 class PasswordResetView(views.PasswordResetView):
     """User forgot password and needs a new one. Email workflow ensues."""
@@ -193,18 +198,51 @@ class PasswordResetView(views.PasswordResetView):
     subject_template_name = 'accounts/password_reset_subject.txt'
     form_class = PasswordResetForm
     success_url = reverse_lazy('accounts:password_reset_done')
+    token_generator = reset_token_generator
 
+    def form_valid(self, form):
+        """Allows the password_reset_done_view access once."""
+        self.request.session['can_view_password_reset_done'] = True
+        return super(PasswordResetView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        """
+        Allows the password_reset_done_view access once. Enabled on
+        invalid forms so as not to leak information about which email
+        addresses or usernames do exist.
+        """
+        self.request.session['can_view_password_reset_done'] = True
+        return super(PasswordResetView, self).form_invalid(form)
 
 class PasswordResetDoneView(views.PasswordChangeDoneView):
     """This view only changes the available options in the Django's
     PasswordChangeDoneView."""
     template_name = 'accounts/password_reset_done.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        # Try to dispatch to the right method; if a method doesn't exist,
+        # defer to the error handler. Also defer to the error handler if the
+        # request method isn't on the approved list.
+        if not request.session.get('can_view_password_reset_done'):
+            return HttpResponseRedirect(reverse('accounts:password_reset'))
+        request.session.pop('can_view_password_reset_done')
+        if request.method.lower() in self.http_method_names:
+            handler = getattr(self, request.method.lower(),
+                              self.http_method_not_allowed)
+        else:
+            handler = self.http_method_not_allowed
+        return handler(request, *args, **kwargs)
 
 class PasswordResetConfirmView(views.PasswordResetConfirmView):
     template_name = 'accounts/password_reset_confirm.html'
     form_class = PasswordSetForm
     success_url = reverse_lazy('accounts:password_reset_complete')
+    token_generator = reset_token_generator
+
+    def form_valid(self, form):
+        """Allows the password_reset_done_view access once."""
+        self.request.session['can_view_password_reset_complete'] = True
+        return super(PasswordResetConfirmView, self).form_valid(form)
 
 
 class PasswordResetCompleteView(views.PasswordResetCompleteView):
@@ -212,6 +250,16 @@ class PasswordResetCompleteView(views.PasswordResetCompleteView):
     PasswordResetCompleteView."""
     template_name = 'accounts/password_reset_complete.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.session.get('can_view_password_reset_complete'):
+            return HttpResponseRedirect(reverse('accounts:password_reset'))
+        request.session.pop('can_view_password_reset_complete')
+        if request.method.lower() in self.http_method_names:
+            handler = getattr(self, request.method.lower(),
+                              self.http_method_not_allowed)
+        else:
+            handler = self.http_method_not_allowed
+        return handler(request, *args, **kwargs)
 
 class PasswordChangeView(views.PasswordChangeView):
     """User voluntarily changes password."""

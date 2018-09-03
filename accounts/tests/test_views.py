@@ -1,4 +1,8 @@
 from math import floor
+from django.contrib.auth.views import (
+    INTERNAL_RESET_SESSION_TOKEN,
+    INTERNAL_RESET_URL_TOKEN,
+) 
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_bytes
@@ -6,11 +10,17 @@ from django.utils.http import urlsafe_base64_encode
 from django.test import TestCase
 from unittest.mock import patch
 
-from accounts.forms import RegistrationForm, LoginForm
+from accounts.forms import (
+    RegistrationForm,
+    LoginForm,
+    PasswordChangeForm,
+    PasswordResetForm,
+    PasswordSetForm,
+)
 from accounts.tokens import verify_token_generator, reset_token_generator
 from accounts.models import User
 
-from accounts.views import INTERNAL_VERIFICATION_URL_TOKEN
+from accounts.views import INTERNAL_VERIFICATION_URL_TOKEN, LOGOUT_MESSAGE
 
 FIRST_NAMES = 'Alice'
 LAST_NAMES = 'Van Der Laand'
@@ -216,6 +226,214 @@ class LoginViewTest(TestCase):
     def test_correct_form_is_used(self):
         response = self.client.get(self.url)
         self.assertIsInstance(response.context_data['form'], LoginForm)
+
+    def test_success_message_has_username_in_it(self):
+        response = self.client.post(self.url, follow=True, data={
+            'username': USERNAME,
+            'password': PASSWORD,
+        })
+        self.assertContains(response, 'Welcome %s!' % (USERNAME,))
+
+
+class LogoutViewTest(TestCase):
+    url = reverse('accounts:logout')
+    def setUp(self):
+        self.user = User(email=EMAIL,
+                         username=USERNAME,
+                         accepted_tos=True,
+                         is_active=True,
+                         is_verified=True)
+        self.user.set_password(PASSWORD)
+        self.user.save()
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_can_logout_with_GET(self):
+        self.client.login(username=USERNAME, password=PASSWORD)
+        response = self.client.get(self.url, follow=True)
+        self.assertNotEqual(response.context.get('user'), self.user)
+        self.assertTrue(response.context.get('user').is_anonymous)
+
+    def test_can_logout_with_POST(self):
+        self.client.login(username=USERNAME, password=PASSWORD)
+        response = self.client.get(self.url, follow=True)
+        self.assertNotEqual(response.context.get('user'), self.user)
+        self.assertTrue(response.context.get('user').is_anonymous)
+
+    def test_success_message_is_added_on_logout(self):
+        response = self.client.post(self.url, follow=True)
+        self.assertContains(response, LOGOUT_MESSAGE)
+
+    def test_logout_redirects_to_home(self):
+        expected_url = reverse('home')
+        response = self.client.get(self.url, follow=False)
+        self.assertRedirects(response, expected_url)
+
+
+class PasswordResetViewTest(TestCase):
+    url = reverse('accounts:password_reset')
+    def setUp(self):
+        self.user = User(email=EMAIL,
+                         username=USERNAME,
+                         is_active=True,
+                         is_verified=True,
+                         accepted_tos=True)
+        self.user.set_password(PASSWORD)
+        self.user.save()
+        self.client.login(username=USERNAME, password=PASSWORD)
+
+    def tearDown(self):
+        self.client.logout()
+
+    def test_right_template_is_used(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, 'accounts/password_reset_form.html')
+
+    def test_correct_form_is_used(self):
+        response = self.client.get(self.url)
+        self.assertIsInstance(response.context_data['form'], PasswordResetForm)
+
+    @patch('accounts.forms.PasswordResetForm.send_mail')
+    def test_form_valid_sends_email(self, mock_send_mail):
+        data = {'email_or_username': EMAIL}
+        response = self.client.post(self.url, data=data)
+        self.assertTrue(mock_send_mail.called)
+
+    @patch('accounts.forms.PasswordResetForm.send_mail')
+    def test_form_invalid_does_not_sends_email(self, mock_send_mail):
+        invalid_data = {'email_or_username': 'wrong@email.com'}
+        response = self.client.post(self.url, data=invalid_data)
+        self.assertFalse(mock_send_mail.called)
+
+    @patch('accounts.forms.PasswordResetForm.send_mail')
+    def test_form_valid_redirects_to_password_reset_done(self, mock_send_mail):
+        data = {'email_or_username': EMAIL}
+        response = self.client.post(self.url, data=data)
+        expected_url = reverse('accounts:password_reset_done')
+        self.assertRedirects(response, expected_url)
+
+    @patch('accounts.forms.PasswordResetForm.send_mail')
+    def test_can_reset_password_with_email(self, mock_send_mail):
+        data = {'email_or_username': EMAIL}
+        response = self.client.post(self.url, data=data)
+        self.assertTrue(mock_send_mail.called)
+
+    @patch('accounts.forms.PasswordResetForm.send_mail')
+    def test_can_reset_password_with_username(self, mock_send_mail):
+        data = {'email_or_username': USERNAME}
+        response = self.client.post(self.url, data=data)
+        self.assertTrue(mock_send_mail.called)
+
+    @patch('accounts.forms.PasswordResetForm.send_mail')
+    def test_invalid_email_still_redirects_to_success_view(self, mock_send_mail):
+        data = {'email_or_username': 'invalido@emailo.com'}
+        expected_url = reverse('accounts:password_reset_done')
+        response = self.client.post(self.url, data=data, follow=True)
+        self.assertRedirects(response, expected_url)
+
+
+class PasswordResetDoneView(TestCase):
+    url = reverse('accounts:password_reset_done')
+    @classmethod
+    def setUpTestData(self):
+        self.user = User(email=EMAIL,
+                         username=USERNAME,
+                         is_active=True,
+                         is_verified=True,
+                         accepted_tos=True)
+        self.user.set_password(PASSWORD)
+        self.user.save()
+
+    def test_right_template_is_used(self):
+        url = reverse('accounts:password_reset')
+        data = {'email_or_username': EMAIL}
+        response = self.client.post(url, data=data, follow=True)
+        self.assertTemplateUsed(response, 'accounts/password_reset_done.html')
+
+    def test_direct_access_redirects_to_password_reset(self):
+        reset_url = reverse('accounts:password_reset')
+        done_url = reverse('accounts:password_reset_done')
+        response = self.client.get(done_url)
+        self.assertRedirects(response, reset_url)
+
+
+class PasswordResetConfirmViewTest(TestCase):
+    """
+    PasswordResetConfirmViewTest tests. Note that in order for tests to pass
+    all client requests need to have kwarg follow=True set, as the im-
+    plementation relies on a redirect for security.
+    """
+    token_generator = reset_token_generator
+
+    def setUp(self):
+        self.user = User(email=EMAIL,
+                         username=USERNAME,
+                         accepted_tos=True,
+                         is_verified=True,
+                         is_active=True)
+        self.user.set_password(PASSWORD)
+        self.user.save()
+        self.token = self.token_generator.make_token(self.user)
+        self.uid = urlsafe_base64_encode(force_bytes(
+            self.user.pk)).decode()
+        self.url = reverse('accounts:password_reset_confirm', kwargs={
+            'uidb64': self.uid,
+            'token': self.token,
+        })
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_right_template_is_used(self):
+        response = self.client.get(self.url, follow=True)
+        self.assertTemplateUsed(response, 'accounts/password_reset_confirm.html')
+
+    def test_token_is_replaced_on_url(self):
+        response = self.client.get(self.url, follow=True)
+        self.assertNotIn(self.token, response.request.get('PATH_INFO'))
+        self.assertIn(INTERNAL_RESET_URL_TOKEN,
+                      response.request.get('PATH_INFO'))
+
+    def test_uid_is_kept_on_url(self):
+        response = self.client.get(self.url)
+        self.assertIn(self.uid, response.url)
+
+    def test_proper_token_passed_displays_form(self):
+        response = self.client.get(self.url, follow=True)
+        self.assertIsNotNone(response.context_data['form'])
+
+    def test_wrong_token_passed_does_display_form_user(self):
+        url = reverse('accounts:password_reset_confirm', kwargs={
+            'uidb64': self.uid,
+            'token': self.token+'a',
+        })
+        response = self.client.get(url, follow=True)
+        self.assertIsNone(response.context_data['form'])
+
+    def test_proper_token_sets_validlink_true(self):
+        url = reverse('accounts:password_reset_confirm', kwargs={
+            'uidb64': self.uid,
+            'token': self.token,    
+        })
+        response = self.client.get(self.url, follow=True)
+        self.assertTrue(response.context_data['validlink'])
+
+    def test_wrong_token_sets_validlink_false(self):
+        url = reverse('accounts:password_reset_confirm', kwargs={
+            'uidb64': self.uid,
+            'token': self.token+'wrongotokeno',
+        })
+        response = self.client.get(url, follow=True)
+        self.assertFalse(response.context_data['validlink'])
+
+    def test_view_redirects_to_tokenless_view(self):
+        expected_url = reverse('accounts:password_reset_confirm', kwargs={
+            'uidb64': self.uid,
+            'token': self.token,
+        }).replace(self.token, INTERNAL_RESET_URL_TOKEN)
+        response = self.client.get(self.url, follow=False)
+        self.assertRedirects(response, expected_url)
 
     # def test_response_has_success_message(self):
 
