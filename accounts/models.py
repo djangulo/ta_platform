@@ -1,5 +1,6 @@
 """Accounts models module."""
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -14,9 +15,22 @@ from django.utils.translation import gettext_lazy as _
 from simple_history import register
 from simple_history.models import HistoricalRecords
 
+
 def user_directory_path(instance, filename):
     """Saves user picture under settings.MEDIA_ROOT"""
-    return f'user_{instance.id}/profile/{filename}'
+    # import pdb; pdb.set_trace()
+    return 'user_%(user_id)s/profile/%(filename)s' % {
+        'user_id': instance.id,
+        'filename': filename,
+    }
+
+def verification_image_dir_path(instance, filename):
+    prefix = instance.get_id_type_display().lower().replace(' ', '_')
+    return 'user_%(user_id)s/docs/%(prefix)s_%(filename)s' % {
+        'user_id': instance.user.id,
+        'prefix': prefix,
+        'filename': filename,
+    }
 
 def reduce_to_alphanum(string):
     """Removes all non alphanumeric characters from string."""
@@ -427,6 +441,8 @@ class NationalId(models.Model):
         help_text=_('ID Type: Cedula, SSN, Passport'),
     )
     id_number = models.CharField(max_length=15, blank=False)
+    verification_image = models.ImageField(blank=True, null=True,
+                                           upload_to=verification_image_dir_path)
     is_verified = models.BooleanField(default=False)
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -445,6 +461,10 @@ class NationalId(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super(NationalId, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.verification_image.delete(save=False)
+        super(NationalId, self).delete(*args, **kwargs)
 
     def clean(self, *args, **kwargs):
         self.id_number = reduce_to_alphanum(self.id_number)

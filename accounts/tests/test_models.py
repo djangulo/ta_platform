@@ -10,16 +10,36 @@ from django.contrib.contenttypes.models import ContentType
 from accounts.models import (
     AreaCode,
     EmailAddress,
+    NationalId,
     PhoneNumber,
     Profile,
     User,
 )
 from admin_console.models import Country
 
-EMAIL = 'alice@wonderland.com'
-PASSWORD = 'TESTPASSWORD'
-USERNAME = 'alice-warrior-117'
+FIRST_NAMES = 'Alice'
+LAST_NAMES = 'Van Der Laand'
+USERNAME = 'alice-in-chains-112'
 PHONE_NUMBER = '333-3333'
+EMAIL = 'alice@wonderland.org'
+BIRTH_DATE = '1916-11-12'
+ID_TYPE = 0
+ID_NUMBER = '000-000000-0'
+PASSWORD = 'testpassword'
+ACCEPT_TOS = True
+
+TEST_DATA = {
+    'first_names': FIRST_NAMES,
+    'last_names': LAST_NAMES,
+    'username': USERNAME,
+    'email': EMAIL,
+    'birth_date': BIRTH_DATE,
+    'national_id_type': ID_TYPE,
+    'national_id_number': ID_NUMBER,
+    'accepted_tos': ACCEPT_TOS,
+    'password1': PASSWORD,
+    'password2': PASSWORD,
+}
 
 IMAGE_PATH = os.path.join(
     settings.BASE_DIR, 'assets/img/LinekodeIconB2.png')
@@ -282,9 +302,52 @@ class UserModelTest(TestCase):
         self.assertIn('delete_site', perms['superuser'])
 
 
-
+@override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class NationalIdTest(TestCase):
-    pass
+    def setUp(self):
+        self.user = User(username=USERNAME,
+                         email=EMAIL,
+                         is_active=True,
+                         is_verified=True)
+        self.user.set_password(PASSWORD)
+        self.user.save()
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_image_is_deleted_from_filesystem_on_delete(self):
+        natid = NationalId.objects.create(
+            id_type=ID_TYPE,
+            id_number=ID_NUMBER,
+            user=self.user,
+            verification_image=SimpleUploadedFile(
+                name='saved.jpg',
+                content=open(IMAGE_PATH, 'rb').read(),
+                content_type='image/png'
+            )
+        )
+        path = natid.verification_image.file.name
+        natid.delete()
+        with self.assertRaises(FileNotFoundError):
+            open(path, 'rb')
+
+    def test_user_directory_path(self):
+        natid = NationalId.objects.create(
+            id_type=ID_TYPE,
+            id_number=ID_NUMBER,
+            user=self.user,
+            verification_image=SimpleUploadedFile(
+                name='saved.jpg',
+                content=open(IMAGE_PATH, 'rb').read(),
+                content_type='image/png'
+            )
+        )
+        self.assertIn('cedula_saved.jpg', os.listdir(
+            os.path.join(
+                TEST_MEDIA_ROOT,
+                'user_%s' %(self.user.id,),
+                'docs'
+            )))
 
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
