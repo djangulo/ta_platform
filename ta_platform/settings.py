@@ -34,10 +34,7 @@ DEFAULT_BRAND_DICT = {
 
 
 BRANDING = False
-if BRANDING:
-    from alorica_branding.vars import BRAND_DICT
-else:
-    BRAND_DICT = DEFAULT_BRAND_DICT
+BRAND_DICT = DEFAULT_BRAND_DICT
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
