@@ -203,7 +203,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = (
-    # os.path.join(BASE_DIR, 'alorica_branding'), # off in the meantime
+    # os.path.join(BASE_DIR, 'default_branding'), # off in the meantime
     os.path.join(BASE_DIR, 'assets'),
 )
 INTERNAL_IPS = ['127.0.0.1']
