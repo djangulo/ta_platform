@@ -6,7 +6,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.test import TestCase
 from unittest.mock import patch
 
-from accounts.forms import RegistrationForm
+from accounts.forms import RegistrationForm, LoginForm
 from accounts.tokens import verify_token_generator, reset_token_generator
 from accounts.models import User
 
@@ -130,25 +130,23 @@ class RegistrationVerifyViewTest(TestCase):
 
     def test_right_template_is_used(self):
         response = self.client.get(self.url, follow=True)
-        self.assertTemplateUsed(response, 'accounts/registration_complete.html')
+        self.assertTemplateUsed(response, 'accounts/registration_verify.html')
 
     def test_token_is_replaced_on_url(self):
         response = self.client.get(self.url)
-        # import pdb; pdb.set_trace()
         self.assertNotIn(self.token, response.url)
         self.assertIn(INTERNAL_VERIFICATION_URL_TOKEN, response.url)
 
     def test_uid_is_kept_on_url(self):
         response = self.client.get(self.url)
-        # import pdb; pdb.set_trace()
         self.assertIn(self.uid, response.url)
 
-    def test_proper_token_passed_registers_user(self):
+    def test_proper_token_passed_verifies_user(self):
         response = self.client.get(self.url, follow=True)
         refreshed_user = User.objects.get(pk=self.unregistered_user.pk)
         self.assertTrue(refreshed_user.is_verified)
 
-    def test_wrong_token_passed_registers_user(self):
+    def test_wrong_token_passed_does_not_verify_user(self):
         url = reverse('accounts:register_verify', kwargs={
             'uidb64': self.uid,
             'token': self.token+'a',
@@ -160,7 +158,7 @@ class RegistrationVerifyViewTest(TestCase):
     def test_proper_token_sets_validlink_true(self):
         url = reverse('accounts:register_verify', kwargs={
             'uidb64': self.uid,
-            'token': self.token,
+            'token': self.token,    
         })
         response = self.client.get(self.url, follow=True)
         self.assertTrue(response.context_data['validlink'])
@@ -172,9 +170,60 @@ class RegistrationVerifyViewTest(TestCase):
         })
         response = self.client.get(url, follow=True)
         self.assertFalse(response.context_data['validlink'])
+
+    def test_view_redirects_to_tokenless_view(self):
+        expected_url = reverse('accounts:register_verify', kwargs={
+            'uidb64': self.uid,
+            'token': self.token,
+        }).replace(self.token, INTERNAL_VERIFICATION_URL_TOKEN)
+        response = self.client.get(self.url, follow=False)
+        self.assertRedirects(response, expected_url)
+
+
+class LoginViewTest(TestCase):
+    url = reverse('accounts:login')
+    def setUp(self):
+        self.user = User(email=EMAIL,
+                                      username=USERNAME,
+                                      accepted_tos=True,
+                                      is_active=True,
+                                      is_verified=True)
+        self.user.set_password(PASSWORD)
+        self.user.save()
+
+    def tearDown(self):
+        self.user.delete()
+
+    @patch('django.contrib.auth.login')
+    def test_login_fails_with_wrong_credentials(self, mock_login):
+        self.client.post(self.url, data={
+            'username': USERNAME+'b',
+            'password': PASSWORD
+        })
+        self.assertFalse(mock_login.called)
+
+    def test_login_runs_with_right_credentials(self):
+        self.client.post(self.url, data={
+            'username': USERNAME,
+            'password': PASSWORD
+        })
+        self.assertTrue(self.user.is_authenticated)
+
+    def test_correct_template_is_used(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, 'accounts/login.html')
+
+    def test_correct_form_is_used(self):
+        response = self.client.get(self.url)
+        self.assertIsInstance(response.context_data['form'], LoginForm)
+
+    # def test_response_has_success_message(self):
+
+        
+
     # def test_view_has_correct_form(self):
     #     response = self.client.get(self.URL)
-    #     self.assertIsInstance(response.context['form'], RegistrationForm)
+    #     self.assertIsInstance(resp`onse.context['form'], RegistrationForm)
 
     # def test_invalid_form_renders_same_view(self):
     #     response = self.client.post(self.URL, data={

@@ -100,7 +100,7 @@ class RegistrationVerifyView(generic.TemplateView):
     purpose is to verify the user via the emailed token after
     registration.
     """
-    template_name = 'accounts/registration_complete.html'
+    template_name = 'accounts/registration_verify.html'
     title = _('Registration complete')
     token_generator = verify_token_generator
 
@@ -165,17 +165,14 @@ class RegistrationVerifyView(generic.TemplateView):
             email=self.user.email
         ).update(is_verified=True)
 
-class RegistrationCompleteView(views.PasswordResetCompleteView):
-    template_name = 'accounts/password_reset_complete.html'
 
-
-
-class LoginView(views.LoginView):
+class LoginView(SuccessMessageMixin, views.LoginView):
     """This view only changes the available options in the Django's
     LoginView."""
     template_name = 'accounts/login.html'
     form_class = LoginForm
     success_url = reverse_lazy('home')
+    success_message = _("Welcome %(username)s!")
     redirect_authenticated_user = True
 
 

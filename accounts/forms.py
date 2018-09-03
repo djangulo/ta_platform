@@ -145,7 +145,7 @@ class RegistrationForm(forms.ModelForm):
                 ),
                 Div(
                     ButtonHolder(
-                        Submit('submit', 'Submit', css_class='button white')
+                        Submit('submit', _('Submit'), css_class='button white')
                     ),
                     css_class='form-row'
                 ),
@@ -315,7 +315,7 @@ class LoginForm(auth_forms.AuthenticationForm):
                 ),
                 Div(
                     ButtonHolder(
-                        Submit('submit', 'Login', css_class='btn btn-primary col-sm-12'),
+                        Submit('submit', _('Login'), css_class='btn btn-primary col-sm-12'),
                         css_class='col-sm-12'
                     ),
                     css_class='form-row'
