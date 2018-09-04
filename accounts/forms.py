@@ -10,6 +10,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.html import escape, html_safe, mark_safe, format_html
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.utils.translation import gettext_lazy as _
@@ -58,13 +59,11 @@ class RegistrationForm(forms.ModelForm):
         label=_("Password"),
         strip=False,
         widget=forms.PasswordInput(attrs={'class': 'form-control'}),
-        help_text=password_validation.password_validators_help_text_html(),
     )
     password2 = forms.CharField(
         label=_("Password confirmation"),
         widget=forms.PasswordInput(attrs={'class': 'form-control'}),
         strip=False,
-        help_text=_("Enter the same password as before, for verification."),
     )
 
     class Meta:
@@ -122,16 +121,31 @@ class RegistrationForm(forms.ModelForm):
                     ),
                     Field(
                         'national_id_number',
+                        placeholder='000-0000000-0',
                         wrapper_class='col-sm-12 col-md-6 mb-3'
                     ),
 
                     css_class='form-row'
                 ),
                 Div(
-                    Field('password1', id='password1',
-                          wrapper_class='col-sm-12 col-md-6 mb-3'),
-                    Field('password2', id='password2',
-                          wrapper_class='col-sm-12 col-md-6 mb-3'),
+                    Field(
+                        'password1',
+                        id='password1',
+                        data_toggle='tooltip',
+                        data_placement='top',
+                        data_html="true",
+                        title=password_validation.password_validators_help_text_html(),
+                        wrapper_class='col-sm-12 col-md-6 mb-3'
+                    ),
+                    Field(
+                        'password2',
+                        id='password2',
+                        data_toggle='tooltip',
+                        data_placement='top',
+                        data_html="true",
+                        title=_('Enter the same password as before, for verification.'),
+                        wrapper_class='col-sm-12 col-md-6 mb-3'
+                    ),
                     css_class='form-row'
                 ),
                 Div(
@@ -327,6 +341,25 @@ class LoginForm(auth_forms.AuthenticationForm):
 class PasswordChangeForm(auth_forms.PasswordChangeForm):
     """This class merely modifies the widgets in the Django's
     PasswordChangeForm"""
+    old_password = forms.CharField(
+        label=_("Old password"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+    )
+    new_password1 = forms.CharField(
+        label=_("New password"),
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+        }),
+        strip=False,
+    )
+    new_password2 = forms.CharField(
+        label=_("New password confirmation"),
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        strip=False,
+        help_text=_("Enter the same password as before, for verification."),
+    )
+
     def __init__(self, *args, **kwargs):
         super(PasswordChangeForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -341,16 +374,23 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
                 Div(
                     Field('old_password', id='old-password',
                           wrapper_class='col-sm-12 mb-3'),
-                    Field('new_password1', id='new-password',
-                          wrapper_class='col-sm-12 mb-3'),
+                    Field(
+                        'new_password1',
+                        id='new-password',
+                        data_toggle='tooltip',
+                        data_placement='top',
+                        data_html="true",
+                        title=password_validation.password_validators_help_text_html(),
+                        wrapper_class='col-sm-12 mb-3'
+                    ),
                     Field('new_password2', id='new-password-confirm',
                           wrapper_class='col-sm-12 mb-3'),                          
                     css_class='form-row'
                 ),
                 Div(
                     ButtonHolder(
-                        Submit('submit', _('Submit'), css_class='btn btn-primary col-sm-6'),
-                        Button('cancel', _('Cancel'), css_class='btn btn-primary col-sm-6'),
+                        Submit('submit', _('Submit'), css_class='btn btn-primary col-sm-12'),
+                        Button('cancel', _('Cancel'), css_class='btn btn-default col-sm-12 mt-1'),
                         css_class='col-sm-12'
                     ),
                     css_class='form-row'
@@ -460,6 +500,13 @@ class PasswordSetForm(auth_forms.SetPasswordForm):
     SetPasswordForm. Used after the user follows the link sent after
     the password reset process is initiated.
     """
+    new_password1 = forms.CharField(
+        label=_("New password"),
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+        }),
+        strip=False,
+    )
     def __init__(self, *args, **kwargs):
         super(PasswordSetForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -471,8 +518,16 @@ class PasswordSetForm(auth_forms.SetPasswordForm):
             Fieldset(
                 '',
                 Div(
-                    Field('new_password1', id='new-password',
-                          wrapper_class='col-sm-12 mb-3'),
+
+                    Field(
+                        'new_password1',
+                        id='new-password',
+                        data_toggle='tooltip',
+                        data_placement='bottom',
+                        data_html="true",
+                        title=password_validation.password_validators_help_text_html(),
+                        wrapper_class='col-sm-12 mb-3'
+                    ),
                     Field('new_password2', id='new-password-confirm',
                           wrapper_class='col-sm-12 mb-3'),                          
                     css_class='form-row'
@@ -486,3 +541,36 @@ class PasswordSetForm(auth_forms.SetPasswordForm):
                 ),
             ),
         )
+
+# class ConfirmPasswordForm(forms.Form):
+#     password = forms.CharField(
+#         label=_("Password"),
+#         strip=False,
+#         widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+#     )
+#     def __init__(self, *args, **kwargs):
+#         super(ConfirmPasswordForm, self).__init__(*args, **kwargs)
+#         self.helper = FormHelper()
+#         self.helper.form_id = 'id-password-confirm-form'
+#         self.helper.form_method = 'post'
+#         self.helper.html5_required = False
+#         self.helper.form_tag = True
+#         self.helper.layout = Layout(
+#             Fieldset(
+#                 HTML("user: {{user.username}}"),
+#                 Div(
+#                     Field('username', id='username',
+#                           wrapper_class='col-sm-12 mb-3'),
+#                     Field('password', id='password',
+#                           wrapper_class='col-sm-12 mb-3'),
+#                     css_class='form-row'
+#                 ),
+#                 Div(
+#                     ButtonHolder(
+#                         Submit('submit', _('Go'), css_class='btn btn-primary col-sm-12'),
+#                         css_class='col-sm-12'
+#                     ),
+#                     css_class='form-row'
+#                 ),
+#             ),
+#         )
