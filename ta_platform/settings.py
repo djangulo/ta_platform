@@ -208,10 +208,9 @@ STATICFILES_DIRS = (
 )
 INTERNAL_IPS = ['127.0.0.1']
 
-# Application settings
+# General Application settings
 ENFORCE_MIN_AGE = True
 MINIMUM_AGE_ALLOWED = 18 # ignored if ENFORCE_MIN_AGE is False
-
 
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
 CELERY_ACCEPT_CONTENT = ['json']

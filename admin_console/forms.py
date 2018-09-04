@@ -63,7 +63,7 @@ class GroupForm(forms.ModelForm):
         )
 
     class Media:
-        js = ('/admin-contrib/jsi18n/',)
+        js = ('/cadmin/jsi18n/',)
 
 
 class PhoneNumberForm(forms.ModelForm):
@@ -438,4 +438,4 @@ class InstitutionForm(forms.ModelForm):
 #         )
 
 #     class Media:
-#         js = ('/admin-contrib/jsi18n/',)
+#         js = ('/cadmin/jsi18n/',)

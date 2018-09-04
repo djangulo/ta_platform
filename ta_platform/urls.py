@@ -36,7 +36,7 @@ urlpatterns += i18n_patterns(
         'admin',
         'accounts',
         ]), name='javascript-catalog'),
-    path('admin-contrib/', admin.site.urls),
+    path('cadmin/', admin.site.urls),
     path('', HomeView.as_view(), name='home'),
     path(_('apply/'), include('applications.urls', namespace='applications')),
     path(_('accounts/'), include('accounts.urls', namespace='accounts')),
