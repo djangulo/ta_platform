@@ -435,81 +435,51 @@ class PasswordResetConfirmViewTest(TestCase):
         response = self.client.get(self.url, follow=False)
         self.assertRedirects(response, expected_url)
 
-    # def test_response_has_success_message(self):
+class PasswordResetCompleteViewTest(TestCase):
+    url = reverse('accounts:password_reset_complete')
+    @classmethod
+    def setUpTestData(self):
+        self.user = User(email=EMAIL,
+                         username=USERNAME,
+                         is_active=True,
+                         is_verified=True,
+                         accepted_tos=True)
+        self.user.set_password(PASSWORD)
+        self.user.save()
 
-        
+    # def test_right_template_is_used(self):
+    #     session = self.client.session
+    #     session['can_view_password_reset_done'] = True
+    #     session.save()
+    #     response = self.client.get(self.url, follow=True)
+    #     self.assertTemplateUsed(response, 'accounts/password_reset_complete.html')
 
-    # def test_view_has_correct_form(self):
-    #     response = self.client.get(self.URL)
-    #     self.assertIsInstance(resp`onse.context['form'], RegistrationForm)
-
-    # def test_invalid_form_renders_same_view(self):
-    #     response = self.client.post(self.URL, data={
-    #         'email': '',
-    #         'username': '',
-    #         'accepted_eula': False
-    #     })
-    #     self.assertTemplateUsed(response, 'accounts/user_form.html')
-
-    # def test_invalid_form_does_not_create_user(self):
-    #     response = self.client.post(self.URL, data={
-    #         'email': '',
-    #         'username': '',
-    #         'accepted_eula': False
-    #     })
-    #     self.assertEqual(User.objects.count(), 0)
-
-    # def test_valid_input_creates_user(self):
-    #     response = self.client.post(self.URL, data={
-    #         'email': EMAIL,
-    #         'username': USERNAME,
-    #         'accepted_eula': True
-    #     })
-    #     self.assertEqual(User.objects.first().username, USERNAME)
-
-#     def test_home_page_returns_correct_markup(self):
-#         request = HttpRequest()
-#         res = home(request)
-#         html = res.content.decode('utf8')
-#         self.assertIn(f"<title>{COMPANY_NAME} | Home</title>", html)
+    def test_direct_access_redirects_to_password_reset(self):
+        reset_url = reverse('accounts:password_reset')
+        done_url = reverse('accounts:password_reset_complete')
+        response = self.client.get(done_url)
+        self.assertRedirects(response, reset_url)
 
 
-# class ApplicationViewTests(TestCase):
+class PasswordChangeViewTest(TestCase):
+    url = reverse('accounts:password_change')
+    @classmethod
+    def setUpTestData(self):
+        self.user = User(email=EMAIL,
+                         username=USERNAME,
+                         is_active=True,
+                         is_verified=True,
+                         accepted_tos=True)
+        self.user.set_password(PASSWORD)
+        self.user.save()
 
-#     def setUp(self):
-#         self.factory = RequestFactory()
-#         self.user = User.objects.create_user(email='alice@wonderland.com',
-#                                              passwo    
-# # path('register/complete/', auth_views.password_reset_complete, {
-    #     'template_name': 'registration/initial_complete.html',
-    # }, name='register-complete'),elf.user,
-#                                             first_names='Alice',
-#                                             last_names='InChains',
-#                                             email=self.user.email,
-#                                             primary_phone='999-999-9999',
-#                                             natid='999-9999999-9')
+    def test_right_template_is_used(self):
+        self.client.login(username=USERNAME, password=PASSWORD)
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, 'accounts/password_change_form.html')
 
-#     def test_can_get_application_form_view(self):
-#         request = self.factory.get(reverse('applications:apply'))
-#         response = ApplicationFormView.as_view()(request)
-#         self.assertEqual(response.status_code, 200)
-
-
-#     def test_application_form_view_has_correct_form(self):
-#         request = self.factory.get(reverse('applications:apply'))
-#         response = ApplicationFormView.as_view()(request)
-#         form = response.context_data['form']
-#         self.assertTrue(isinstance(form, ApplicationForm))
-
-#     def test_can_save_a_POST_request(self):
-#         response = self.client.post(reverse('applications:apply'), data={
-#             'first_names': 'Alice',
-#             'last_names': 'InChains',
-#             'email': self.user.email,
-#             'national_id_number': '123-4567890-1',
-#             'primary_phone': self.profile.primary_phone,
-#         })
-#         application = Application.objects.first()
-#         self.assertEqual(application.national_id_number, '12345678901')
-        
-    
+    def test_right_form_is_used(self):
+        self.client.login(username=USERNAME, password=PASSWORD)
+        response = self.client.get(self.url, follow=True)
+        self.assertIsInstance(response.context_data['form'],
+                              PasswordChangeForm)

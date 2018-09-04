@@ -35,6 +35,6 @@ urlpatterns = [
          views.ProfileDetailView.as_view(),
          name='profile'),
     path(_('<slug:slug>/my-account'),
-         views.AccountDetailView.as_view(),
+         views.AccountSettingsView.as_view(),
          name='account'),
 ]

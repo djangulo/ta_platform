@@ -1,22 +1,24 @@
-import datetime
-from django import forms
-from django.conf import settings
+# pylint: disable=W0201
+"""
+Accounts views module. Pertinent to each user and user account.
+Included views:
+ - Profile detail view
+ - Account settings view
+ - Registration workflow views: form, done and verify
+ - Login & logout views
+ - Password reset workflow views: form, done, confirm, complete
+ - Password change workflow views: form, complete
+"""
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth import views, get_user_model, password_validation
-from django.contrib.auth.hashers import check_password
-from django.contrib.auth.mixins import AccessMixin, LoginRequiredMixin
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMultiAlternatives
+from django.contrib.auth import views
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.debug import sensitive_post_parameters
-from django.template import loader
-from django.utils.timezone import now
 from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_bytes
 from django.urls import reverse_lazy, reverse
 from django.views import generic
 from django.utils.translation import ugettext_lazy as _
@@ -27,33 +29,35 @@ from accounts.forms import (
     PasswordSetForm,
     RegistrationForm,
 )
-from accounts.models import User, Profile, NationalId, EmailAddress
+from accounts.models import User, EmailAddress
 from accounts.tokens import verify_token_generator, reset_token_generator
-# from accounts.mixins import ConfirmPasswordMixin
 
-# if settings.BRANDING:
-#     COMPANY_NAME = settings.BRAND_DICT.get('COMPANY_NAME')
-# else:
-#     COMPANY_NAME = 'MyCo DR'
 LOGOUT_MESSAGE = _('You have successfully logged out.')
-
-
-UserModel = get_user_model()
-
 INTERNAL_VERIFICATION_URL_TOKEN = 'verify-user'
 INTERNAL_VERIFICATION_SESSION_TOKEN = '_verification_token'
 
+
 class ProfileDetailView(LoginRequiredMixin, generic.DetailView):
+    """
+    Profile detail view. Accessible to all registered users. Higher
+    level of detail granted to owner and staff.
+    """
     model = User
     template_name = 'accounts/profile_detail.html'
 
 
 class AccountSettingsView(LoginRequiredMixin, generic.DetailView):
+    """
+    Account settings view. Accessible only to owner. Staff will
+    have access to modify settings here, but through the admin console
+    app.
+    """
     model = User
     template_name = 'accounts/account_settings.html'
 
 
 class RegistrationView(generic.CreateView):
+    """Registration form view. Initiates registration workflow."""
     form_class = RegistrationForm
     token_generator = verify_token_generator
     model = User
@@ -98,6 +102,10 @@ class RegistrationView(generic.CreateView):
 
 
 class RegistrationDoneView(generic.TemplateView):
+    """
+    Simple template view to display completion of first step of
+    registration process.
+    """
     template_name = 'accounts/registration_done.html'
 
 
@@ -109,6 +117,7 @@ class RegistrationVerifyView(generic.TemplateView):
     template_name = 'accounts/registration_verify.html'
     title = _('Registration complete')
     token_generator = verify_token_generator
+    user = None
 
     @method_decorator(sensitive_post_parameters())
     @method_decorator(never_cache)
@@ -146,6 +155,9 @@ class RegistrationVerifyView(generic.TemplateView):
         return self.render_to_response(self.get_context_data())
 
     def get_user(self, uidb64):
+        """
+        Finds the user by the base64 encoded primary key.
+        """
         try:
             # urlsafe_base64_decode() decodes to bytestring
             uid = urlsafe_base64_decode(uidb64).decode()
@@ -167,6 +179,7 @@ class RegistrationVerifyView(generic.TemplateView):
         return context
 
     def activate_user_and_email(self):
+        """Activates user and verifies the user and the email address."""
         User.objects.filter(id=self.user.id).update(is_verified=True,
                                                     is_active=True)
         EmailAddress.objects.filter(
@@ -196,8 +209,6 @@ class LogoutView(views.LogoutView):
 
 class PasswordResetView(views.PasswordResetView):
     """User forgot password and needs a new one. Email workflow ensues."""
-    # TODO: edit the email template
-    # TODO: create email editor for users
     template_name = 'accounts/password_reset_form.html'
     email_template_name = 'accounts/password_reset_email.html'
     subject_template_name = 'accounts/password_reset_subject.txt'
@@ -239,6 +250,7 @@ class PasswordResetDoneView(views.PasswordChangeDoneView):
         return handler(request, *args, **kwargs)
 
 class PasswordResetConfirmView(views.PasswordResetConfirmView):
+    """Password reset confirm view. Extended for convenience."""
     template_name = 'accounts/password_reset_confirm.html'
     form_class = PasswordSetForm
     success_url = reverse_lazy('accounts:password_reset_complete')
@@ -278,56 +290,3 @@ class PasswordChangeCompleteView(LoginRequiredMixin, views.PasswordResetComplete
     """This view only changes the available options in the Django's
     PasswordResetCompleteView."""
     template_name = 'accounts/password_change_complete.html'
-
-
-
-
-# class ConfirmPasswordView(views.LoginView):
-#     """This view only changes the available options in the Django's
-#     LoginView."""
-#     template_name = 'accounts/login.html'
-#     next_page = None
-
-#     # def __init__(self, next_page, *args, **kwargs):
-#     #     self.next_page = next_page
-#     #     super(ConfirmPasswordView, self).__init__(*args, **kwargs)
-
-#     def get_form_class(self):
-#         return ConfirmPasswordForm
-
-#     def form_valid(self, form):
-#         _next = self.request.GET.get('next')
-#         if self.request.user.is_authenticated:
-#             if check_password(form.cleaned_data['password'],
-#                               self.request.user.password):
-#                 return HttpResponseRedirect(_next)
-#         else:
-#             return super().form_invalid(form)
-
-#     # def get_context_data(self, *args, **kwargs):
-#     #     context = super(ConfirmPasswordView, self).get_context_data(
-#     #             *args, **kwargs)
-#     #     if self.request.user.is_authenticated:
-
-# class ConfirmPasswordMixin(AccessMixin):
-#     """
-#     Mixin that intercept the request to re-authenticate then redirect
-#     the user to the requested (original) view. Used for
-#     security locations like paywalls and account management.
-
-#     confirm_success_url needs to be set in order for the mixin to know to which
-#     view redirect to.
-#     """
-#     max_last_login_seconds = 300  # Defaults to 30 minutes
-
-#     def dispatch(self, request, *args, **kwargs):
-#         # import pdb; pdb.set_trace()
-#         response = super(ConfirmPasswordMixin, self).dispatch(
-#             request, *args, **kwargs)
-#         if response.status_code == 200:
-#             delta = datetime.timedelta(seconds=self.max_last_login_seconds)
-#             if now() > (request.user.last_login + delta):
-#                 return ConfirmPasswordView.as_view(next_page=request.path)(request)
-#             else:
-#                 return response
-#         return response

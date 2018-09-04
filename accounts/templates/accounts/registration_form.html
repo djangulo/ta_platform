@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css">
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="{% static 'css/pretty-checkbox-overrides.css' %}" />
+<link rel="stylesheet" href="{% static 'accounts/auth-styles.css' %}" />
 {% endblock %}
 
 {% block page_title %}
@@ -28,18 +29,18 @@
 {% endblock %}
 
 {% block main_content %}
+<div class="container">
+
     {% crispy form form.helper %}
+</div>
 {% endblock %}
 
 {% block app_js %}
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script>
     $(document).ready(function() {
-
         $('#id_birth_date').datepicker({
             format: 'dd/mm/yyyy'
         });
-        $('#id_national_id_number').attr('placeholder', "000-0000000-0");
         $('#id_national_id_type').on('change', function() {
             var val = $('#id_national_id_type').val();
             var id_number = $('#id_national_id_number');
@@ -52,8 +53,8 @@
             }
         });
     });
+    $("#password1").tooltip({trigger: 'focus'});
+    $("#password2").tooltip({trigger: 'focus'});
 </script>
-<script>
-
-</script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 {% endblock %}
